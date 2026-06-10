@@ -19,6 +19,9 @@
 }
 
 * { box-sizing: border-box; }
+/* L'attribut hidden doit toujours gagner, même sur les éléments
+   ayant un display flex/grid (modale, formulaires, vues). */
+[hidden] { display: none !important; }
 html, body { margin: 0; padding: 0; }
 body {
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
