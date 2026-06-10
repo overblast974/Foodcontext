@@ -85,7 +85,7 @@ const FOODS = [
   { id: "achards", cat: "accomp", emoji: "🥗", name: "Achards de légumes", portion: "1 portion (80 g)",
     kcal: 85, prot: 1.5, carb: 6, fat: 6, fibre: 2.5, sugar: 3.5, sat: 0.8, salt: 0.9, ca: 30, fe: 0.7, mg: 15, k: 180, vitc: 25 },
   { id: "salade_palmiste", cat: "accomp", emoji: "🌴", name: "Salade de palmiste", portion: "1 portion (100 g)",
-    kcal: 90, prot: 2.5, carb: 4, fat: 7, fibre: 2.4, sugar: 1.5, sat: 1, salt: 0.5, ca: 18, fe: 1.7, mg: 10, k: 1800, vitc: 8 },
+    kcal: 90, prot: 2.5, carb: 4, fat: 7, fibre: 2.4, sugar: 1.5, sat: 1, salt: 0.5, ca: 18, fe: 1.7, mg: 10, k: 180, vitc: 8 },
   { id: "gratin_chouchou", cat: "accomp", emoji: "🧀", name: "Gratin de chouchou", portion: "1 part (200 g)",
     kcal: 240, prot: 9, carb: 12, fat: 17, fibre: 3, sugar: 5, sat: 9, salt: 1.1, ca: 200, fe: 0.8, mg: 25, k: 350, vitc: 12 },
   { id: "salade_verte", cat: "accomp", emoji: "🥗", name: "Salade verte vinaigrette", portion: "1 bol (80 g)",

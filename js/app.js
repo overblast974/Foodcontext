@@ -32,6 +32,10 @@ function savePhotos() { Store.set("fc_photos", state.photos); }
 
 function allFoods() { return FOODS.concat(state.customFoods); }
 function foodById(id) { return allFoods().find(f => f.id === id); }
+/* Aliment de repli si un aliment personnalisé référencé par le journal ou le
+   plat en cours a été supprimé : évite de planter le rendu des vues. */
+const FOOD_INCONNU = { id: "", cat: "perso", emoji: "❓", name: "Aliment supprimé", portion: "", kcal: 0 };
+function foodOrUnknown(id) { return foodById(id) || FOOD_INCONNU; }
 
 /* ================= Dates ================= */
 function dKey(d) {
@@ -90,7 +94,8 @@ function dayTotals(dateKey) {
 function computeTargets(p) {
   const bmr = 10 * p.kg + 6.25 * p.cm - 5 * p.age + (p.sex === "h" ? 5 : -161);
   const tdee = bmr * p.pal + Number(p.goal);
-  const kcal = Math.max(1200, Math.round(tdee));
+  // Plancher de sécurité différencié (AND/ANSES) : 1500 kcal homme, 1200 kcal femme.
+  const kcal = Math.max(p.sex === "h" ? 1500 : 1200, Math.round(tdee));
   return {
     kcal,
     prot: Math.round(kcal * 0.15 / 4),
@@ -105,7 +110,16 @@ function activeTargets() {
 }
 
 function fmt(n, dec = 0) {
-  return n.toLocaleString("fr-FR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  // Number(n) || 0 : protège contre undefined/NaN (ex. données importées incomplètes).
+  return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+
+/* Échappe le HTML des chaînes saisies par l'utilisateur (aliments personnalisés,
+   données importées) avant toute injection via innerHTML — protection XSS. */
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
 }
 
 /* ================= Vues ================= */
@@ -129,14 +143,14 @@ function tileHTML(f) {
   const photo = state.photos[f.id];
   const visual = photo
     ? `<span class="tile-img" style="background-image:url('${photo}')"></span>`
-    : `<span class="tile-emoji">${f.emoji}</span>`;
+    : `<span class="tile-emoji">${esc(f.emoji)}</span>`;
   const cat = FOOD_CATEGORIES.find(c => c.id === f.cat);
-  return `<button class="tile ${inMeal ? "selected" : ""}" data-food="${f.id}"
+  return `<button class="tile ${inMeal ? "selected" : ""}" data-food="${esc(f.id)}"
             style="--cat:${cat ? cat.color : "#888"}">
       ${visual}
       ${inMeal ? `<span class="tile-qty">×${fmt(inMeal.qty, inMeal.qty % 1 ? 1 : 0)}</span>` : ""}
-      <span class="tile-name">${f.name}</span>
-      <span class="tile-info">${f.portion} · ${fmt(f.kcal)} kcal</span>
+      <span class="tile-name">${esc(f.name)}</span>
+      <span class="tile-info">${esc(f.portion)} · ${fmt(f.kcal)} kcal</span>
     </button>`;
 }
 
@@ -169,15 +183,15 @@ function renderTray() {
     return;
   }
   tray.innerHTML = state.currentMeal.map(it => {
-    const f = foodById(it.foodId);
+    const f = foodOrUnknown(it.foodId);
     return `<div class="tray-item">
-        <span class="tray-emoji">${f.emoji}</span>
-        <span class="tray-name">${f.name}<small>${f.portion}</small></span>
+        <span class="tray-emoji">${esc(f.emoji)}</span>
+        <span class="tray-name">${esc(f.name)}<small>${esc(f.portion)}</small></span>
         <span class="tray-ctrl">
-          <button class="qty-btn" data-act="minus" data-food="${f.id}">−</button>
+          <button class="qty-btn" data-act="minus" data-food="${esc(it.foodId)}">−</button>
           <span class="tray-qty">${fmt(it.qty, it.qty % 1 ? 1 : 0)}</span>
-          <button class="qty-btn" data-act="plus" data-food="${f.id}">+</button>
-          <button class="qty-btn del" data-act="del" data-food="${f.id}">✕</button>
+          <button class="qty-btn" data-act="plus" data-food="${esc(it.foodId)}">+</button>
+          <button class="qty-btn del" data-act="del" data-food="${esc(it.foodId)}">✕</button>
         </span>
         <span class="tray-kcal">${fmt(f.kcal * it.qty)} kcal</span>
       </div>`;
@@ -245,11 +259,11 @@ function nutrientTable(t, compareTargets) {
 function showMealReport(items, type) {
   const t = mealTotals(items);
   const list = items.map(it => {
-    const f = foodById(it.foodId);
-    return `<li>${f.emoji} ${f.name} <b>×${fmt(it.qty, it.qty % 1 ? 1 : 0)}</b> — ${fmt(f.kcal * it.qty)} kcal</li>`;
+    const f = foodOrUnknown(it.foodId);
+    return `<li>${esc(f.emoji)} ${esc(f.name)} <b>×${fmt(it.qty, it.qty % 1 ? 1 : 0)}</b> — ${fmt(f.kcal * it.qty)} kcal</li>`;
   }).join("");
   openModal(`
-    <h2>✅ ${type} enregistré</h2>
+    <h2>✅ ${esc(type)} enregistré</h2>
     <ul class="meal-list">${list}</ul>
     <div class="macros-line center">
       <span class="kcal-big">${fmt(t.kcal)} kcal</span>
@@ -289,12 +303,12 @@ function renderJour() {
   $("#jour-meals").innerHTML = meals.length ? meals.map(m => {
     const mt = mealTotals(m.items);
     const list = m.items.map(it => {
-      const f = foodById(it.foodId);
-      return `<li>${f.emoji} ${f.name} ×${fmt(it.qty, it.qty % 1 ? 1 : 0)}</li>`;
+      const f = foodOrUnknown(it.foodId);
+      return `<li>${esc(f.emoji)} ${esc(f.name)} ×${fmt(it.qty, it.qty % 1 ? 1 : 0)}</li>`;
     }).join("");
     return `<div class="meal-card">
         <div class="meal-card-head">
-          <b>${m.type}</b> <small>${m.time}</small>
+          <b>${esc(m.type)}</b> <small>${esc(m.time)}</small>
           <span class="meal-kcal">${fmt(mt.kcal)} kcal</span>
           <button class="qty-btn del" data-delmeal="${m.id}" title="Supprimer">✕</button>
         </div>
@@ -335,10 +349,10 @@ function renderSemaine() {
     const mealLines = meals.map(m => {
       const mt = mealTotals(m.items);
       const names = m.items.map(it => {
-        const f = foodById(it.foodId);
-        return `${f.name} ×${fmt(it.qty, it.qty % 1 ? 1 : 0)}`;
+        const f = foodOrUnknown(it.foodId);
+        return `${esc(f.name)} ×${fmt(it.qty, it.qty % 1 ? 1 : 0)}`;
       }).join(", ");
-      return `<li><b>${m.type}</b> (${m.time}) — ${names} <i>${fmt(mt.kcal)} kcal</i></li>`;
+      return `<li><b>${esc(m.type)}</b> (${esc(m.time)}) — ${names} <i>${fmt(mt.kcal)} kcal</i></li>`;
     }).join("");
     return `<div class="week-day ${meals.length ? "" : "empty"}">
         <div class="week-day-head">
@@ -399,8 +413,11 @@ function renderReglages() {
        Glucides ${fmt(t.carb)} g · Lipides ${fmt(t.fat)} g
        <br><small>Méthode : métabolisme de base Mifflin-St Jeor (1990) × niveau
        d'activité (FAO/OMS), répartition ANSES 2021 (protéines 15 %, lipides 37,5 %,
-       glucides 47,5 % de l'apport énergétique). Les valeurs fournies par votre
-       diététicien(ne) restent prioritaires : utilisez la saisie manuelle.</small>`;
+       glucides 47,5 % de l'apport énergétique). ⚠️ Ces formules valent pour un
+       adulte en bonne santé : en cas de perte de poids encadrée, de plus de
+       65 ans ou de pathologie, les besoins (notamment en protéines) diffèrent —
+       utilisez la saisie manuelle avec les valeurs de votre diététicien(ne),
+       qui restent prioritaires.</small>`;
   } else $("#calc-result").innerHTML = "";
 }
 
@@ -480,9 +497,10 @@ function openCustomFoodForm() {
 
 function openFoodPhotoForm(foodId) {
   const f = foodById(foodId);
+  if (!f) return;
   openModal(`
-    <h2>${f.emoji} ${f.name}</h2>
-    <p>${f.portion} — ${fmt(f.kcal)} kcal / dose</p>
+    <h2>${esc(f.emoji)} ${esc(f.name)}</h2>
+    <p>${esc(f.portion)} — ${fmt(f.kcal)} kcal / dose</p>
     ${nutrientTable(f)}
     <label class="btn">📷 ${state.photos[foodId] ? "Changer la" : "Ajouter une"} photo
       <input id="photo-input" type="file" accept="image/*" capture="environment" hidden></label>
@@ -505,6 +523,8 @@ function openFoodPhotoForm(foodId) {
     if (!confirm("Supprimer « " + f.name + " » ?")) return;
     state.customFoods = state.customFoods.filter(x => x.id !== foodId);
     delete state.photos[foodId];
+    // On le retire aussi du plat en cours pour ne pas garder une référence morte.
+    state.currentMeal = state.currentMeal.filter(i => i.foodId !== foodId);
     saveCustomFoods(); savePhotos(); closeModal(); renderSaisie();
   });
 }
@@ -548,6 +568,7 @@ function bindEvents() {
   grid.addEventListener("pointerdown", e => {
     const tile = e.target.closest("[data-food]");
     if (!tile) return;
+    clearTimeout(pressTimer); // sécurité multi-touch : ne pas perdre un minuteur en cours
     pressTimer = setTimeout(() => {
       pressTimer = null;
       openFoodPhotoForm(tile.dataset.food);
