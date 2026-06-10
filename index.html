@@ -24,7 +24,13 @@
   <section id="view-saisie" class="view">
     <div class="saisie-layout">
       <div class="saisie-left">
-        <input id="food-search" type="search" placeholder="🔍 Rechercher un plat… (cari, rougail…)" autocomplete="off">
+        <div id="first-hint" class="hint-banner" hidden>
+          <span>👋</span>
+          <span><b>Bienvenue !</b> Touchez une vignette pour ajouter une dose à votre plat,
+            puis validez : votre journée se remplit toute seule.</span>
+          <button id="first-hint-close" class="hint-close" aria-label="Fermer ce message d'aide">✕</button>
+        </div>
+        <input id="food-search" type="search" placeholder="🔍 Rechercher un plat… (cari, rougail…)" autocomplete="off" aria-label="Rechercher un plat">
         <div id="cat-bar" class="cat-bar"></div>
         <div id="tile-grid" class="tile-grid"></div>
         <p class="hint">Appui court : +1 dose · Appui long : fiche aliment & photo</p>
@@ -55,9 +61,9 @@
   <!-- ============ VUE JOUR ============ -->
   <section id="view-jour" class="view" hidden>
     <div class="nav-date">
-      <button id="jour-prev" class="btn round">‹</button>
+      <button id="jour-prev" class="btn round" aria-label="Jour précédent">‹</button>
       <h2 id="jour-date"></h2>
-      <button id="jour-next" class="btn round">›</button>
+      <button id="jour-next" class="btn round" aria-label="Jour suivant">›</button>
     </div>
     <div id="jour-progress" class="card"></div>
     <div id="jour-meals"></div>
@@ -67,9 +73,9 @@
   <!-- ============ VUE SEMAINE ============ -->
   <section id="view-semaine" class="view" hidden>
     <div class="nav-date">
-      <button id="semaine-prev" class="btn round">‹</button>
+      <button id="semaine-prev" class="btn round" aria-label="Semaine précédente">‹</button>
       <h2 id="semaine-range"></h2>
-      <button id="semaine-next" class="btn round">›</button>
+      <button id="semaine-next" class="btn round" aria-label="Semaine suivante">›</button>
     </div>
     <button id="download-pdf" class="btn primary wide">📄 Télécharger le bilan PDF (pour la diététicienne)</button>
     <div id="print-header" class="print-only"></div>
@@ -142,7 +148,7 @@
   </section>
 </main>
 
-<nav class="bottom-nav">
+<nav class="bottom-nav" aria-label="Navigation principale">
   <button id="nav-saisie" class="nav-btn"><span>🍛</span>Saisie</button>
   <button id="nav-jour" class="nav-btn"><span>📅</span>Jour</button>
   <button id="nav-semaine" class="nav-btn"><span>📊</span>Semaine</button>
@@ -150,7 +156,7 @@
 </nav>
 
 <div id="modal" class="modal" hidden>
-  <div id="modal-content" class="modal-content"></div>
+  <div id="modal-content" class="modal-content" role="dialog" aria-modal="true"></div>
 </div>
 
 <script src="js/foods.js"></script>

@@ -2,20 +2,41 @@
    écran externe ~344-376 px CSS de large (étroit et haut),
    écran interne déplié ~600-840 px CSS (quasi carré). */
 
+/* ============================================================
+   Design tokens — toutes les surfaces passent par des variables
+   pour permettre le mode sombre sans dupliquer les composants.
+   ============================================================ */
 :root {
+  /* Identité : vert "forêt de Bélouve" + lave/tropical en accent. */
   --green: #1b5e20;
   --green-light: #2e7d32;
-  --bg: #f4f6f2;
+  --green-deep: #11430f;
+  --lava: #e64a19;            /* accent volcan, par petites touches */
+  --accent: #ff8f00;          /* ambre (badges, focus) */
+  --accent-text: #b45309;     /* ambre foncé lisible sur fond clair (AA) */
+
+  --bg: #f5f3ec;              /* sable chaud, plus appétissant qu'un gris */
   --card: #ffffff;
   --text: #1c2520;
-  --muted: #687068;
-  --accent: #ff8f00;
+  --muted: #5b655c;           /* ≥ 5,9:1 sur blanc (AA) */
   --danger: #c62828;
-  --p: #1976d2;
-  --g: #f9a825;
-  --l: #8e24aa;
-  --radius: 14px;
-  --shadow: 0 1px 4px rgba(0,0,0,.12);
+
+  /* Macro-pastilles : assez foncées pour du texte blanc (AA ≥ 4,5:1). */
+  --p: #1565c0;
+  --g: #b45309;
+  --l: #7b1fa2;
+
+  --line: #e9ece7;            /* séparateurs fins */
+  --ctl-border: #cfd5cd;      /* bordures de champs/boutons */
+  --field: #ffffff;           /* fond des champs de saisie */
+  --track: #e6e9e3;           /* rail des barres de progression */
+  --tint-green: #e8f5e9;      /* surlignage vert doux */
+  --focus: #c26a00;           /* anneau focus visible sur clair et vert */
+
+  --radius: 16px;
+  --radius-s: 12px;
+  --shadow: 0 1px 2px rgba(28, 46, 31, .08), 0 4px 14px rgba(28, 46, 31, .07);
+  --shadow-raised: 0 2px 6px rgba(28, 46, 31, .12), 0 10px 24px rgba(28, 46, 31, .10);
 }
 
 * { box-sizing: border-box; }
@@ -27,200 +48,309 @@ body {
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: calc(68px + env(safe-area-inset-bottom));
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus clavier bien visible, sans gêner le tactile. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* ---------- En-tête ---------- */
 .app-header {
   display: flex; align-items: baseline; gap: 8px;
-  background: var(--green); color: #fff;
-  padding: 10px 14px calc(10px);
-  padding-top: calc(10px + env(safe-area-inset-top));
+  background: linear-gradient(120deg, var(--green-deep), var(--green) 55%, var(--green-light));
+  color: #fff;
+  padding: 11px 14px;
+  padding-top: calc(11px + env(safe-area-inset-top));
   position: sticky; top: 0; z-index: 10;
 }
-.app-header h1 { font-size: 1.15rem; margin: 0; }
-.app-header .subtitle { font-size: .7rem; opacity: .85; }
+/* Fine ligne "lave" sous l'en-tête : clin d'œil au volcan, sans kitsch. */
+.app-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--lava) 45%, var(--green-light));
+}
+.app-header h1 { font-size: 1.18rem; margin: 0; letter-spacing: .015em; }
+.app-header .logo { font-size: 1.2rem; }
+.app-header .subtitle { font-size: .72rem; opacity: .9; }
 
-main { padding: 10px; max-width: 1100px; margin: 0 auto; }
+main { padding: 12px; max-width: 1100px; margin: 0 auto; }
 
 /* ---------- Cartes & boutons ---------- */
 .card {
   background: var(--card); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 12px; margin-bottom: 12px;
+  box-shadow: var(--shadow); padding: 14px; margin-bottom: 12px;
 }
-.card h2 { font-size: 1rem; margin: 0 0 8px; }
+.card h2 { font-size: 1.02rem; margin: 0 0 10px; }
 .card h3 { font-size: .95rem; margin: 0 0 6px; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  border: 1px solid #d0d6d0; background: #fff; color: var(--text);
-  border-radius: 10px; padding: 10px 14px; font-size: .92rem;
+  border: 1px solid var(--ctl-border); background: var(--field); color: var(--text);
+  border-radius: var(--radius-s); padding: 10px 14px; font-size: .92rem;
   cursor: pointer; min-height: 44px;
+  transition: transform .12s ease, box-shadow .15s ease, background-color .15s ease;
 }
-.btn.primary { background: var(--green-light); border-color: var(--green-light); color: #fff; font-weight: 600; }
-.btn.primary:disabled { opacity: .45; }
-.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn:active { transform: scale(.97); }
+.btn.primary {
+  background: linear-gradient(135deg, var(--green-light), var(--green));
+  border-color: transparent; color: #fff; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(27, 94, 32, .30);
+}
+.btn.primary:disabled { opacity: .45; box-shadow: none; cursor: default; }
+.btn.danger { color: var(--danger); border-color: var(--danger); background: var(--field); }
 .btn.round { border-radius: 50%; width: 44px; padding: 0; font-size: 1.3rem; }
 .btn.wide { width: 100%; margin-bottom: 10px; }
 
 /* ---------- Saisie : recherche + catégories ---------- */
 #food-search {
-  width: 100%; padding: 11px 12px; font-size: 1rem;
-  border: 1px solid #d0d6d0; border-radius: 10px; margin-bottom: 8px;
-  background: #fff;
+  width: 100%; padding: 12px 14px; font-size: 1rem;
+  border: 1px solid var(--ctl-border); border-radius: var(--radius-s); margin-bottom: 10px;
+  background: var(--field); color: var(--text);
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
+#food-search:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(46, 125, 50, .15); outline: none; }
 .cat-bar {
-  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px;
+  display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px; margin-bottom: 8px;
   -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
 .cat-bar::-webkit-scrollbar { display: none; }
 .cat-chip {
-  flex: 0 0 auto; border: 2px solid var(--cat, #888); color: var(--cat, #555);
-  background: #fff; border-radius: 999px; padding: 6px 12px;
-  font-size: .82rem; font-weight: 600; cursor: pointer; min-height: 36px;
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+  border: 2px solid var(--ctl-border); color: var(--text);
+  background: var(--field); border-radius: 999px; padding: 8px 14px;
+  font-size: .84rem; font-weight: 600; cursor: pointer; min-height: 40px;
+  position: relative; transition: background-color .15s ease, border-color .15s ease;
 }
-.cat-chip.active { background: var(--cat, #555); color: #fff; }
+/* Zone tactile étendue (≥ 48 px) sans grossir visuellement la puce. */
+.cat-chip::after { content: ""; position: absolute; inset: -5px; border-radius: 999px; }
+/* Pastille de couleur de catégorie (le texte reste contrasté). */
+.cat-chip::before {
+  content: ""; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--cat, #888); flex: 0 0 auto;
+}
+.cat-chip.active {
+  border-color: var(--cat, #555);
+  background: color-mix(in srgb, var(--cat, #555) 18%, var(--card));
+  box-shadow: inset 0 0 0 1px var(--cat, #555);
+}
 
-/* ---------- Vignettes ---------- */
+/* ---------- Vignettes (façon appli de commande de plats) ---------- */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
 }
 .tile {
   position: relative; display: flex; flex-direction: column; align-items: center;
-  gap: 2px; padding: 10px 6px 8px;
+  gap: 3px; padding: 12px 6px 10px;
   background: var(--card); border: 2px solid transparent;
   border-top: 4px solid var(--cat, #888);
   border-radius: var(--radius); box-shadow: var(--shadow);
-  cursor: pointer; min-height: 116px; font-family: inherit;
+  cursor: pointer; min-height: 124px; font-family: inherit; color: inherit;
   user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  transition: transform .14s ease, box-shadow .2s ease, background-color .15s ease;
 }
-.tile.selected { border-color: var(--green-light); background: #e8f5e9; }
-.tile:active { transform: scale(.96); }
-.tile-emoji { font-size: 2rem; line-height: 1.2; pointer-events: none; }
+.tile.selected { border-color: var(--green-light); background: var(--tint-green); }
+.tile:active { transform: scale(.94); box-shadow: 0 1px 3px rgba(28, 46, 31, .12); }
+/* Halo teinté derrière l'émoji : rend la grille plus gourmande. */
+.tile-emoji {
+  font-size: 1.9rem; line-height: 1; pointer-events: none;
+  width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%;
+  background: #f1f3ef;
+  background: color-mix(in srgb, var(--cat, #888) 13%, var(--card));
+}
+.tile.selected .tile-emoji { background: color-mix(in srgb, var(--green-light) 16%, var(--card)); }
 .tile-img {
-  width: 52px; height: 52px; border-radius: 10px;
+  width: 54px; height: 54px; border-radius: 50%;
   background-size: cover; background-position: center; pointer-events: none;
 }
 .tile-name {
-  font-size: .78rem; font-weight: 600; text-align: center; line-height: 1.15;
+  font-size: .8rem; font-weight: 600; text-align: center; line-height: 1.18;
   pointer-events: none; overflow-wrap: anywhere;
 }
 .tile-info {
-  font-size: .68rem; color: var(--muted); text-align: center; pointer-events: none;
+  font-size: .7rem; color: var(--muted); text-align: center; pointer-events: none;
   overflow-wrap: anywhere;
+}
+.tile-kcal {
+  font-size: .76rem; font-weight: 700; color: var(--accent-text);
+  pointer-events: none; font-variant-numeric: tabular-nums;
 }
 .tile-qty {
   position: absolute; top: 4px; right: 4px;
-  background: var(--accent); color: #fff; font-weight: 700; font-size: .8rem;
+  background: var(--accent); color: #4a2b00; font-weight: 800; font-size: .8rem;
   border-radius: 999px; padding: 2px 7px; pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
 }
-.tile-add { border-style: dashed; border-color: #b8c0b8; color: var(--muted); }
-.hint { font-size: .72rem; color: var(--muted); text-align: center; margin: 8px 0; }
+.tile-qty.bump { animation: badge-pop .28s cubic-bezier(.2, .9, .4, 1.3); }
+@keyframes badge-pop {
+  0% { transform: scale(.3); }
+  70% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.tile-add { border-style: dashed; border-color: #b8c0b8; color: var(--muted); box-shadow: none; }
+.tile-add .tile-emoji { background: transparent; }
+.hint { font-size: .76rem; color: var(--muted); text-align: center; margin: 10px 0; }
+
+/* Bandeau d'aide au premier lancement. */
+.hint-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--tint-green); border: 1px solid rgba(46, 125, 50, .35);
+  border-radius: var(--radius-s); padding: 10px 12px; margin-bottom: 10px;
+  font-size: .85rem; line-height: 1.4;
+}
+.hint-banner b { color: var(--green); }
+.hint-banner .hint-close {
+  margin-left: auto; flex: 0 0 auto; border: none; background: none; cursor: pointer;
+  font-size: 1rem; color: var(--muted); padding: 4px; min-width: 36px; min-height: 36px;
+  border-radius: 50%;
+}
 
 /* ---------- Plat en cours ---------- */
+.tray-card { border-top: 4px solid var(--green-light); }
 .tray-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .tray-head select {
-  padding: 8px; border-radius: 8px; border: 1px solid #d0d6d0; font-size: .9rem; background: #fff;
+  padding: 9px 10px; border-radius: 10px; border: 1px solid var(--ctl-border);
+  font-size: .9rem; background: var(--field); color: var(--text); min-height: 44px;
 }
-.tray-empty { color: var(--muted); text-align: center; font-size: .9rem; }
+.tray-empty { color: var(--muted); text-align: center; font-size: .9rem; padding: 10px 4px; }
 .tray-item {
   display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center;
-  padding: 7px 0; border-bottom: 1px solid #eef1ee;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.tray-item.enter { animation: tray-in .22s ease-out; }
+@keyframes tray-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 .tray-emoji { font-size: 1.3rem; }
 .tray-name { font-size: .88rem; font-weight: 600; display: flex; flex-direction: column; }
 .tray-name small { font-weight: 400; color: var(--muted); }
 .tray-ctrl { display: flex; align-items: center; gap: 4px; }
 .qty-btn {
-  width: 34px; height: 34px; border-radius: 8px; border: 1px solid #d0d6d0;
-  background: #fff; font-size: 1.05rem; cursor: pointer;
+  width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--ctl-border);
+  background: var(--field); color: var(--text); font-size: 1.1rem; cursor: pointer;
+  position: relative; transition: transform .12s ease, background-color .15s ease;
 }
+/* Cible tactile effective ≥ 46 px sans alourdir la ligne. */
+.qty-btn::after { content: ""; position: absolute; inset: -5px; }
+.qty-btn:active { transform: scale(.92); }
 .qty-btn.del { color: var(--danger); border: none; background: none; }
-.tray-qty { min-width: 26px; text-align: center; font-weight: 700; }
-.tray-kcal { font-size: .8rem; color: var(--muted); white-space: nowrap; }
-.tray-actions { display: flex; gap: 8px; margin-top: 10px; }
+.tray-qty { min-width: 26px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tray-kcal { font-size: .82rem; font-weight: 600; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tray-actions { display: flex; gap: 8px; margin-top: 12px; }
 .tray-actions .primary { flex: 1; }
 
-.macros-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 4px; }
+.macros-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; }
 .macros-line.center { justify-content: center; }
-.kcal-big { font-size: 1.3rem; font-weight: 800; color: var(--green); }
-.macro { font-size: .82rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; color: #fff; }
+.kcal-big { font-size: 1.55rem; font-weight: 800; color: var(--green); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.macro { font-size: .82rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; color: #fff; }
 .macro.p { background: var(--p); } .macro.g { background: var(--g); } .macro.l { background: var(--l); }
 .macros-mini { color: var(--muted); }
 
 /* ---------- Vue Jour ---------- */
 .nav-date { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-.nav-date h2 { font-size: 1.02rem; margin: 0; text-transform: capitalize; text-align: center; flex: 1; }
-.pbar { margin-bottom: 10px; }
-.pbar-head { display: flex; justify-content: space-between; font-size: .82rem; font-weight: 600; margin-bottom: 3px; }
-.pbar-track { height: 10px; background: #e4e8e4; border-radius: 999px; overflow: hidden; }
-.pbar-fill { height: 100%; border-radius: 999px; background: var(--green-light); transition: width .3s; }
+.nav-date h2 { font-size: 1.05rem; margin: 0; text-transform: capitalize; text-align: center; flex: 1; }
+.pbar { margin-bottom: 12px; }
+.pbar-head { display: flex; justify-content: space-between; font-size: .84rem; font-weight: 600; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.pbar-track { height: 10px; background: var(--track); border-radius: 999px; overflow: hidden; }
+.pbar-fill {
+  height: 100%; border-radius: 999px; background: var(--green-light);
+  transition: width .3s; animation: pbar-grow .7s cubic-bezier(.25, .7, .3, 1);
+}
+@keyframes pbar-grow { from { width: 0; } }
 .pbar.p .pbar-fill { background: var(--p); }
 .pbar.g .pbar-fill { background: var(--g); }
 .pbar.l .pbar-fill { background: var(--l); }
 .pbar-fill.over { background: var(--danger) !important; }
 
-.meal-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 10px; }
+.meal-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 10px; }
 .meal-card-head { display: flex; align-items: center; gap: 8px; }
 .meal-card-head small { color: var(--muted); }
-.meal-kcal { margin-left: auto; font-weight: 700; color: var(--green); }
+.meal-kcal { margin-left: auto; font-weight: 800; font-size: 1.05rem; color: var(--green); font-variant-numeric: tabular-nums; }
 .meal-card ul { margin: 6px 0; padding-left: 18px; font-size: .87rem; }
 .meal-list { padding-left: 18px; font-size: .92rem; }
 
+/* États vides illustrés. */
+.empty-state {
+  text-align: center; padding: 28px 18px; color: var(--muted);
+  background: var(--card); border: 2px dashed var(--ctl-border);
+  border-radius: var(--radius); margin-bottom: 12px; font-size: .92rem; line-height: 1.5;
+}
+.empty-state .emoji { display: block; font-size: 2.3rem; margin-bottom: 8px; }
+.empty-state b { color: var(--text); }
+
 /* ---------- Tableau nutriments ---------- */
-.nutri-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 8px 0; }
-.nutri-table td, .nutri-table th { padding: 4px 6px; border-bottom: 1px solid #eef1ee; text-align: left; }
+.nutri-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 8px 0; font-variant-numeric: tabular-nums; }
+.nutri-table td, .nutri-table th { padding: 5px 6px; border-bottom: 1px solid var(--line); text-align: left; }
 .nutri-table .num, .nutri-table .pct { text-align: right; white-space: nowrap; }
 .nutri-table tr.sub td { color: var(--muted); padding-left: 18px; font-size: .8rem; }
-details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 6px 0; }
+details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 8px 0; }
 
 /* ---------- Vue Semaine ---------- */
-.week-day { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 8px; }
-.week-day.empty { opacity: .55; }
-.week-day-head { display: flex; justify-content: space-between; font-size: .92rem; }
-.week-day ul { margin: 6px 0 0; padding-left: 18px; font-size: .83rem; }
+.week-day { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 10px; }
+.week-day.empty { opacity: .7; box-shadow: none; border: 2px dashed var(--line); background: transparent; }
+.week-day.empty .week-day-head span { color: var(--muted); font-style: italic; }
+.week-day-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.week-day ul { margin: 8px 0 0; padding-left: 18px; font-size: .83rem; }
 .week-day li { margin-bottom: 2px; }
+/* Mini-jauge kcal vs objectif sous chaque jour. */
+.day-bar { height: 6px; background: var(--track); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.day-bar-fill { height: 100%; border-radius: 999px; background: var(--green-light); }
+.day-bar-fill.over { background: var(--danger); }
 
 /* ---------- Réglages ---------- */
-.radio-line { display: block; padding: 8px 0; font-size: .95rem; }
-.radio-line small { display: block; color: var(--muted); margin-left: 24px; }
+.radio-line { display: block; padding: 10px 0; font-size: .95rem; }
+.radio-line input { width: 18px; height: 18px; accent-color: var(--green-light); }
+.radio-line small { display: block; color: var(--muted); margin-left: 26px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; }
 .form-grid input, .form-grid select {
-  padding: 10px; border: 1px solid #d0d6d0; border-radius: 8px; font-size: .95rem; background: #fff; width: 100%;
+  padding: 10px; border: 1px solid var(--ctl-border); border-radius: 10px;
+  font-size: .95rem; background: var(--field); color: var(--text); width: 100%; min-height: 44px;
 }
-.calc-result { font-size: .9rem; background: #e8f5e9; border-radius: 10px; padding: 0; }
-.calc-result:not(:empty) { padding: 10px; }
+.calc-result { font-size: .9rem; background: var(--tint-green); border-radius: var(--radius-s); padding: 0; }
+.calc-result:not(:empty) { padding: 12px; }
 .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- Navigation basse ---------- */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-  display: flex; background: #fff; box-shadow: 0 -2px 8px rgba(0,0,0,.1);
+  display: flex; background: var(--card); box-shadow: 0 -2px 10px rgba(0, 0, 0, .12);
   padding-bottom: env(safe-area-inset-bottom);
 }
 .nav-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px;
-  border: none; background: none; padding: 8px 0 6px;
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border: none; background: none; padding: 8px 0 7px; min-height: 56px;
   font-size: .72rem; color: var(--muted); cursor: pointer;
 }
-.nav-btn span { font-size: 1.25rem; }
+.nav-btn span {
+  font-size: 1.25rem; line-height: 1.3; padding: 2px 16px; border-radius: 999px;
+  transition: background-color .2s ease;
+}
 .nav-btn.active { color: var(--green); font-weight: 700; }
+.nav-btn.active span { background: var(--tint-green); }
 
 /* ---------- Modale ---------- */
 .modal {
-  position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.5);
+  position: fixed; inset: 0; z-index: 50; background: rgba(10, 20, 12, .55);
   display: flex; align-items: flex-end; justify-content: center;
+  animation: modal-fade .18s ease-out;
 }
+@keyframes modal-fade { from { opacity: 0; } }
 .modal-content {
-  background: #fff; border-radius: 18px 18px 0 0; padding: 18px;
+  background: var(--card); color: var(--text);
+  border-radius: 20px 20px 0 0; padding: 18px;
   width: 100%; max-width: 560px; max-height: 85vh; overflow-y: auto;
   display: flex; flex-direction: column; gap: 8px;
+  box-shadow: var(--shadow-raised);
+  animation: modal-sheet .24s cubic-bezier(.25, .8, .35, 1);
 }
-.modal-content h2 { margin: 0 0 4px; font-size: 1.05rem; }
+@keyframes modal-sheet { from { transform: translateY(28px); opacity: .5; } }
+.modal-content h2 { margin: 0 0 4px; font-size: 1.08rem; }
 
 /* ============================================================
    Z FOLD — écran externe (étroit : Fold 4/5 ≈ 344-376 px CSS)
@@ -228,26 +358,33 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 
 @media (max-width: 430px) {
   /* minmax(0,1fr) : les colonnes peuvent rétrécir sous la largeur min-content
      des vignettes (noms longs), sinon la grille déborde de l'écran. */
-  .tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .tile { min-height: 108px; padding: 8px 4px 6px; }
-  .tile-emoji { font-size: 1.7rem; }
+  .tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tile { min-height: 112px; padding: 10px 4px 8px; }
+  .tile-emoji, .tile-img { width: 46px; height: 46px; font-size: 1.6rem; }
   .app-header .subtitle { display: none; }
   .form-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
    Z FOLD — écran interne déplié (≈ 600-840 px CSS, quasi carré)
-   Double panneau : vignettes à gauche, plat en cours à droite.
+   Double panneau : vignettes à gauche, plat en cours en colonne
+   latérale fixe à droite (vraie sidebar).
    ============================================================ */
 @media (min-width: 600px) {
-  .saisie-layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; }
+  .saisie-layout { display: grid; grid-template-columns: 1fr 330px; gap: 16px; align-items: start; }
   /* min-width:0 : sans cela la barre de catégories (flex non repliable) impose
      sa largeur min-content à la colonne 1fr et fait déborder la page. */
   .saisie-left { min-width: 0; }
-  .saisie-right { position: sticky; top: 64px; }
-  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+  .saisie-right { position: sticky; top: 66px; }
+  .tray-card {
+    display: flex; flex-direction: column; margin-bottom: 0;
+    max-height: calc(100vh - 160px); box-shadow: var(--shadow-raised);
+  }
+  #meal-tray { overflow-y: auto; min-height: 48px; }
+  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); }
   .modal { align-items: center; }
-  .modal-content { border-radius: 18px; }
+  .modal-content { border-radius: 20px; }
+  @keyframes modal-sheet { from { transform: translateY(14px) scale(.98); opacity: .5; } }
 }
 
 /* Posture pliée à plat (Flex mode / pliure verticale) : on évite que
@@ -257,18 +394,103 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 
 }
 
 /* ============================================================
-   Impression / export PDF du bilan hebdomadaire
+   Mode sombre (écran uniquement — l'impression reste claire)
+   ============================================================ */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11150f;
+    --card: #1c231c;
+    --text: #e8ece6;
+    --muted: #a8b2a6;          /* ≥ 6:1 sur la carte sombre */
+    --green: #7cc47f;          /* version claire pour le texte sur fond sombre */
+    --green-light: #4caf50;
+    --green-deep: #0d2e0c;
+    --accent-text: #ffb05c;
+    --danger: #ef6e63;
+    --p: #5e97e0; --g: #d98a2b; --l: #ba68c8;
+    --line: #2c352b;
+    --ctl-border: #3d473b;
+    --field: #232b22;
+    --track: #2c352b;
+    --tint-green: #24351f;
+    --focus: #ffb74d;
+    --shadow: 0 0 0 1px rgba(255, 255, 255, .055);
+    --shadow-raised: 0 0 0 1px rgba(255, 255, 255, .08), 0 8px 22px rgba(0, 0, 0, .5);
+  }
+  .app-header {
+    background: linear-gradient(120deg, #0c230b, #14401a 60%, #1d5423);
+    color: #eef3ec;
+  }
+  /* Pastilles macro : texte foncé sur fond plus clair (meilleur contraste sombre). */
+  .macro { color: #10150f; }
+  .tile-qty { color: #2e1c00; }
+  .btn.primary { background: linear-gradient(135deg, #2e7d32, #1b5e20); color: #fff; box-shadow: none; }
+  .bottom-nav { box-shadow: 0 -2px 10px rgba(0, 0, 0, .5); border-top: 1px solid var(--line); }
+  .modal { background: rgba(0, 0, 0, .65); }
+  .tile-add { border-color: #4a554a; }
+  .hint-banner { border-color: rgba(124, 196, 127, .4); }
+}
+
+/* ============================================================
+   Accessibilité : animations coupées si l'utilisateur le demande
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   Impression / export PDF du bilan hebdomadaire — document
+   professionnel destiné au/à la diététicien(ne).
    ============================================================ */
 .print-only { display: none; }
 @media print {
-  body { background: #fff; padding: 0; font-size: 11pt; }
+  @page { margin: 14mm 12mm; }
+  :root {
+    /* L'impression reste claire, même si le téléphone est en mode sombre. */
+    --bg: #fff; --card: #fff; --text: #111; --muted: #444;
+    --green: #1b5e20; --green-light: #2e7d32;
+    --line: #ddd; --track: #eee; --tint-green: #fff;
+    --p: #1565c0; --g: #b45309; --l: #7b1fa2; --danger: #b00020;
+  }
+  body { background: #fff; padding: 0; font-size: 10.5pt; line-height: 1.45; color: #111; }
   .app-header, .bottom-nav, .nav-date button, #download-pdf,
-  #view-saisie, #view-jour, #view-reglages, .modal { display: none !important; }
+  #view-saisie, #view-jour, #view-reglages, .modal, .hint-banner { display: none !important; }
   #view-semaine { display: block !important; }
-  .print-only { display: block; margin-bottom: 12px; }
-  .print-only h1 { font-size: 16pt; margin: 0 0 4px; }
-  .card, .week-day { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+
+  /* En-tête de document. */
+  .print-only { display: block; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2.5pt solid #1b5e20; }
+  .print-only h1 { font-size: 16pt; margin: 0 0 2px; color: #1b5e20; }
+  .print-only .print-sub { font-size: 9.5pt; color: #444; margin: 0 0 6px; }
+  .print-only .print-meta {
+    font-size: 10pt; margin: 6px 0 0; padding: 6px 10px;
+    border: 1pt solid #bbb; border-left: 3pt solid #1b5e20; background: #f7f7f5;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  }
+  #semaine-range { font-size: 12pt; text-align: left; }
+  .nav-date { margin-bottom: 8px; }
+
+  .card, .week-day, .meal-card { box-shadow: none; border: 1pt solid #bbb; break-inside: avoid; border-radius: 6px; }
+  .week-day.empty { opacity: 1; border-style: dashed; background: #fff; }
+  /* La synthèse (1re carte) est mise en avant. */
+  #semaine-content > .card:first-child { border: 1.5pt solid #1b5e20; }
+
+  /* Pastilles macro : lisibles à l'impression N&B. */
+  .macro { background: none !important; color: #111; border: 1pt solid #888; print-color-adjust: exact; }
+  .kcal-big { color: #1b5e20; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+  .nutri-table { font-size: 9pt; }
+  .nutri-table th { border-bottom: 1.5pt solid #333; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .04em; }
+  .nutri-table td, .nutri-table th { padding: 3pt 5pt; border-bottom-color: #ddd; }
+  .nutri-table tr:nth-child(even) td { background: #f5f5f3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+  .day-bar { display: none; }
+  .week-day-head b { font-size: 11pt; }
+
   details { display: block; }
   details > * { display: block; }
   details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
 }
