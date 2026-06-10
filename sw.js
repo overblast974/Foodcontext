@@ -1,5 +1,5 @@
 /* Service worker — Kalori Péi : application 100 % hors-ligne (cache-first). */
-const CACHE = "kalori-pei-v3";
+const CACHE = "kalori-pei-v4";
 const ASSETS = [
   "./",
   "./index.html",

@@ -131,6 +131,8 @@ function showView(name) {
     $("#view-" + v).hidden = v !== name;
     $("#nav-" + v).classList.toggle("active", v === name);
   });
+  // Chaque vue repart du haut (sinon on hérite du défilement de la vue précédente).
+  window.scrollTo(0, 0);
   if (name === "saisie") renderSaisie();
   if (name === "jour") renderJour();
   if (name === "semaine") renderSemaine();
@@ -145,12 +147,16 @@ function tileHTML(f) {
     ? `<span class="tile-img" style="background-image:url('${photo}')"></span>`
     : `<span class="tile-emoji">${esc(f.emoji)}</span>`;
   const cat = FOOD_CATEGORIES.find(c => c.id === f.cat);
+  // .bump : rejoue l'animation du badge uniquement sur la vignette qui vient
+  // d'être touchée (la grille est re-rendue entièrement à chaque appui).
+  const bump = state._bump === f.id ? " bump" : "";
   return `<button class="tile ${inMeal ? "selected" : ""}" data-food="${esc(f.id)}"
             style="--cat:${cat ? cat.color : "#888"}">
       ${visual}
-      ${inMeal ? `<span class="tile-qty">×${fmt(inMeal.qty, inMeal.qty % 1 ? 1 : 0)}</span>` : ""}
+      ${inMeal ? `<span class="tile-qty${bump}">×${fmt(inMeal.qty, inMeal.qty % 1 ? 1 : 0)}</span>` : ""}
       <span class="tile-name">${esc(f.name)}</span>
-      <span class="tile-info">${esc(f.portion)} · ${fmt(f.kcal)} kcal</span>
+      <span class="tile-info">${esc(f.portion)}</span>
+      <span class="tile-kcal">${fmt(f.kcal)} kcal</span>
     </button>`;
 }
 
@@ -184,14 +190,16 @@ function renderTray() {
   }
   tray.innerHTML = state.currentMeal.map(it => {
     const f = foodOrUnknown(it.foodId);
-    return `<div class="tray-item">
+    // .enter : anime seulement la ligne qui vient d'être ajoutée/modifiée.
+    const enter = state._bump === it.foodId ? " enter" : "";
+    return `<div class="tray-item${enter}">
         <span class="tray-emoji">${esc(f.emoji)}</span>
         <span class="tray-name">${esc(f.name)}<small>${esc(f.portion)}</small></span>
         <span class="tray-ctrl">
-          <button class="qty-btn" data-act="minus" data-food="${esc(it.foodId)}">−</button>
+          <button class="qty-btn" data-act="minus" data-food="${esc(it.foodId)}" aria-label="Réduire la quantité de ${esc(f.name)}">−</button>
           <span class="tray-qty">${fmt(it.qty, it.qty % 1 ? 1 : 0)}</span>
-          <button class="qty-btn" data-act="plus" data-food="${esc(it.foodId)}">+</button>
-          <button class="qty-btn del" data-act="del" data-food="${esc(it.foodId)}">✕</button>
+          <button class="qty-btn" data-act="plus" data-food="${esc(it.foodId)}" aria-label="Augmenter la quantité de ${esc(f.name)}">+</button>
+          <button class="qty-btn del" data-act="del" data-food="${esc(it.foodId)}" aria-label="Retirer ${esc(f.name)} du plat">✕</button>
         </span>
         <span class="tray-kcal">${fmt(f.kcal * it.qty)} kcal</span>
       </div>`;
@@ -212,7 +220,12 @@ function tapTile(foodId) {
   const it = state.currentMeal.find(i => i.foodId === foodId);
   if (it) it.qty += 1; else state.currentMeal.push({ foodId, qty: 1 });
   if (navigator.vibrate) navigator.vibrate(15);
+  // Marque l'aliment touché le temps d'un rendu : déclenche les micro-animations
+  // (badge ×N qui "pop", ligne du plateau qui glisse), puis on efface le marqueur
+  // pour que les rendus suivants (recherche, filtre…) ne rejouent rien.
+  state._bump = foodId;
   renderSaisie();
+  state._bump = null;
 }
 function adjustQty(foodId, act) {
   const idx = state.currentMeal.findIndex(i => i.foodId === foodId);
@@ -221,7 +234,9 @@ function adjustQty(foodId, act) {
   if (act === "plus") it.qty = Math.round((it.qty + 0.5) * 2) / 2;
   if (act === "minus") it.qty = Math.round((it.qty - 0.5) * 2) / 2;
   if (act === "del" || it.qty <= 0) state.currentMeal.splice(idx, 1);
+  if (act === "plus" || act === "minus") state._bump = foodId;
   renderSaisie();
+  state._bump = null;
 }
 
 function validateMeal() {
@@ -235,6 +250,9 @@ function validateMeal() {
     items: state.currentMeal.map(i => ({ ...i })),
   });
   saveJournal();
+  // Premier repas validé : l'aide de bienvenue n'est plus nécessaire.
+  const hint = $("#first-hint");
+  if (hint && !hint.hidden) { hint.hidden = true; Store.set("fc_hintSeen", true); }
   showMealReport(state.currentMeal, type);
   state.currentMeal = [];
   renderSaisie();
@@ -310,12 +328,14 @@ function renderJour() {
         <div class="meal-card-head">
           <b>${esc(m.type)}</b> <small>${esc(m.time)}</small>
           <span class="meal-kcal">${fmt(mt.kcal)} kcal</span>
-          <button class="qty-btn del" data-delmeal="${m.id}" title="Supprimer">✕</button>
+          <button class="qty-btn del" data-delmeal="${m.id}" title="Supprimer" aria-label="Supprimer ce repas (${esc(m.type)})">✕</button>
         </div>
         <ul>${list}</ul>
         <small class="macros-mini">P ${fmt(mt.prot)} g · G ${fmt(mt.carb)} g · L ${fmt(mt.fat)} g</small>
       </div>`;
-  }).join("") : `<p class="tray-empty">Aucun repas enregistré ce jour.</p>`;
+  }).join("") : `<div class="empty-state"><span class="emoji">🍽️</span>
+      <b>Aucun repas enregistré ce jour.</b><br>
+      Ouvrez l'onglet <b>Saisie</b> et touchez les vignettes pour composer votre plat.</div>`;
 
   $("#jour-detail").innerHTML = meals.length
     ? `<details><summary>Bilan détaillé du jour (macro + micro)</summary>${nutrientTable(t, { kcal: tg.kcal, prot: tg.prot, carb: tg.carb, fat: tg.fat })}</details>`
@@ -357,9 +377,11 @@ function renderSemaine() {
     return `<div class="week-day ${meals.length ? "" : "empty"}">
         <div class="week-day-head">
           <b>${FMT_SHORT.format(d)}</b>
-          <span>${meals.length ? fmt(t.kcal) + " kcal · " + pct + " % obj." : "—"}</span>
+          <span>${meals.length ? fmt(t.kcal) + " kcal · " + pct + " % obj." : "Aucun repas saisi"}</span>
         </div>
-        ${meals.length ? `<small class="macros-mini">P ${fmt(t.prot)} g · G ${fmt(t.carb)} g · L ${fmt(t.fat)} g · Sel ${fmt(t.salt, 1)} g · Fibres ${fmt(t.fibre)} g</small>
+        ${meals.length ? `<div class="day-bar" role="img" aria-label="${pct} % de l'objectif calorique">
+          <div class="day-bar-fill ${pct > 105 ? "over" : ""}" style="width:${Math.min(100, pct)}%"></div></div>
+        <small class="macros-mini">P ${fmt(t.prot)} g · G ${fmt(t.carb)} g · L ${fmt(t.fat)} g · Sel ${fmt(t.salt, 1)} g · Fibres ${fmt(t.fibre)} g</small>
         <ul>${mealLines}</ul>` : ""}
       </div>`;
   }).join("");
@@ -382,11 +404,13 @@ function renderSemaine() {
     </div>
     ${dayBlocks}`;
 
-  // En-tête du PDF imprimé
+  // En-tête du PDF imprimé (document remis au/à la diététicien(ne)).
   $("#print-header").innerHTML = `
     <h1>Kalori Péi — Bilan hebdomadaire</h1>
-    <p>Semaine du ${FMT_SHORT.format(monday)} au ${FMT_SHORT.format(sunday)} —
-       généré le ${new Date().toLocaleDateString("fr-FR")}<br>
+    <p class="print-sub">Suivi alimentaire · cuisine réunionnaise · valeurs estimées (table CIQUAL/ANSES)</p>
+    <p class="print-meta">
+       <b>Semaine du ${FMT_SHORT.format(monday)} au ${FMT_SHORT.format(sunday)}</b> —
+       document généré le ${new Date().toLocaleDateString("fr-FR")}<br>
        Objectifs journaliers : ${fmt(tg.kcal)} kcal · Protéines ${fmt(tg.prot)} g ·
        Glucides ${fmt(tg.carb)} g · Lipides ${fmt(tg.fat)} g</p>`;
 }
@@ -618,10 +642,24 @@ function bindEvents() {
   bindReglages();
 }
 
+/* ---------- Aide au premier lancement ---------- */
+function initFirstHint() {
+  const banner = $("#first-hint");
+  if (!banner) return;
+  // Affiché tant qu'aucun repas n'a été validé et que l'aide n'a pas été fermée.
+  const seen = Store.get("fc_hintSeen", false);
+  if (!seen && !Object.keys(state.journal).length) banner.hidden = false;
+  $("#first-hint-close").addEventListener("click", () => {
+    banner.hidden = true;
+    Store.set("fc_hintSeen", true);
+  });
+}
+
 /* ================= Init ================= */
 document.addEventListener("DOMContentLoaded", () => {
   $("#meal-type").value = mealTypeForNow();
   bindEvents();
+  initFirstHint();
   showView("saisie");
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(() => { /* hors PWA */ });
