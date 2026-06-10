@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2e7d32"/>
+      <stop offset="1" stop-color="#1b5e20"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  <!-- assiette -->
+  <circle cx="256" cy="268" r="150" fill="#ffffff"/>
+  <circle cx="256" cy="268" r="112" fill="#f4f6f2" stroke="#d8ddd8" stroke-width="4"/>
+  <!-- riz -->
+  <ellipse cx="218" cy="252" rx="58" ry="40" fill="#fff8e1" stroke="#e8dcb0" stroke-width="4"/>
+  <!-- cari -->
+  <ellipse cx="300" cy="290" rx="56" ry="38" fill="#ff8f00"/>
+  <circle cx="286" cy="282" r="11" fill="#e65100"/>
+  <circle cx="316" cy="296" r="10" fill="#e65100"/>
+  <!-- piment -->
+  <path d="M338 200 q30 -8 42 14 q-26 18 -46 4 z" fill="#c62828"/>
+  <!-- volcan stylisé -->
+  <path d="M96 132 l40 -56 l18 22 l22 -30 l46 64 z" fill="#ffffff" opacity="0.92"/>
+  <path d="M150 84 l6 -16 l8 16 z" fill="#ff8f00"/>
+</svg>

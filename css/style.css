@@ -1,0 +1,263 @@
+/* Kalori Péi — optimisé Galaxy Z Fold 4→7 :
+   écran externe ~344-376 px CSS de large (étroit et haut),
+   écran interne déplié ~600-840 px CSS (quasi carré). */
+
+:root {
+  --green: #1b5e20;
+  --green-light: #2e7d32;
+  --bg: #f4f6f2;
+  --card: #ffffff;
+  --text: #1c2520;
+  --muted: #687068;
+  --accent: #ff8f00;
+  --danger: #c62828;
+  --p: #1976d2;
+  --g: #f9a825;
+  --l: #8e24aa;
+  --radius: 14px;
+  --shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- En-tête ---------- */
+.app-header {
+  display: flex; align-items: baseline; gap: 8px;
+  background: var(--green); color: #fff;
+  padding: 10px 14px calc(10px);
+  padding-top: calc(10px + env(safe-area-inset-top));
+  position: sticky; top: 0; z-index: 10;
+}
+.app-header h1 { font-size: 1.15rem; margin: 0; }
+.app-header .subtitle { font-size: .7rem; opacity: .85; }
+
+main { padding: 10px; max-width: 1100px; margin: 0 auto; }
+
+/* ---------- Cartes & boutons ---------- */
+.card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 12px; margin-bottom: 12px;
+}
+.card h2 { font-size: 1rem; margin: 0 0 8px; }
+.card h3 { font-size: .95rem; margin: 0 0 6px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid #d0d6d0; background: #fff; color: var(--text);
+  border-radius: 10px; padding: 10px 14px; font-size: .92rem;
+  cursor: pointer; min-height: 44px;
+}
+.btn.primary { background: var(--green-light); border-color: var(--green-light); color: #fff; font-weight: 600; }
+.btn.primary:disabled { opacity: .45; }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn.round { border-radius: 50%; width: 44px; padding: 0; font-size: 1.3rem; }
+.btn.wide { width: 100%; margin-bottom: 10px; }
+
+/* ---------- Saisie : recherche + catégories ---------- */
+#food-search {
+  width: 100%; padding: 11px 12px; font-size: 1rem;
+  border: 1px solid #d0d6d0; border-radius: 10px; margin-bottom: 8px;
+  background: #fff;
+}
+.cat-bar {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.cat-bar::-webkit-scrollbar { display: none; }
+.cat-chip {
+  flex: 0 0 auto; border: 2px solid var(--cat, #888); color: var(--cat, #555);
+  background: #fff; border-radius: 999px; padding: 6px 12px;
+  font-size: .82rem; font-weight: 600; cursor: pointer; min-height: 36px;
+}
+.cat-chip.active { background: var(--cat, #555); color: #fff; }
+
+/* ---------- Vignettes ---------- */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
+  gap: 8px;
+}
+.tile {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 10px 6px 8px;
+  background: var(--card); border: 2px solid transparent;
+  border-top: 4px solid var(--cat, #888);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  cursor: pointer; min-height: 116px; font-family: inherit;
+  user-select: none; -webkit-user-select: none; touch-action: manipulation;
+}
+.tile.selected { border-color: var(--green-light); background: #e8f5e9; }
+.tile:active { transform: scale(.96); }
+.tile-emoji { font-size: 2rem; line-height: 1.2; pointer-events: none; }
+.tile-img {
+  width: 52px; height: 52px; border-radius: 10px;
+  background-size: cover; background-position: center; pointer-events: none;
+}
+.tile-name {
+  font-size: .78rem; font-weight: 600; text-align: center; line-height: 1.15;
+  pointer-events: none;
+}
+.tile-info { font-size: .68rem; color: var(--muted); text-align: center; pointer-events: none; }
+.tile-qty {
+  position: absolute; top: 4px; right: 4px;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: .8rem;
+  border-radius: 999px; padding: 2px 7px; pointer-events: none;
+}
+.tile-add { border-style: dashed; border-color: #b8c0b8; color: var(--muted); }
+.hint { font-size: .72rem; color: var(--muted); text-align: center; margin: 8px 0; }
+
+/* ---------- Plat en cours ---------- */
+.tray-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tray-head select {
+  padding: 8px; border-radius: 8px; border: 1px solid #d0d6d0; font-size: .9rem; background: #fff;
+}
+.tray-empty { color: var(--muted); text-align: center; font-size: .9rem; }
+.tray-item {
+  display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center;
+  padding: 7px 0; border-bottom: 1px solid #eef1ee;
+}
+.tray-emoji { font-size: 1.3rem; }
+.tray-name { font-size: .88rem; font-weight: 600; display: flex; flex-direction: column; }
+.tray-name small { font-weight: 400; color: var(--muted); }
+.tray-ctrl { display: flex; align-items: center; gap: 4px; }
+.qty-btn {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid #d0d6d0;
+  background: #fff; font-size: 1.05rem; cursor: pointer;
+}
+.qty-btn.del { color: var(--danger); border: none; background: none; }
+.tray-qty { min-width: 26px; text-align: center; font-weight: 700; }
+.tray-kcal { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.tray-actions { display: flex; gap: 8px; margin-top: 10px; }
+.tray-actions .primary { flex: 1; }
+
+.macros-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 4px; }
+.macros-line.center { justify-content: center; }
+.kcal-big { font-size: 1.3rem; font-weight: 800; color: var(--green); }
+.macro { font-size: .82rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; color: #fff; }
+.macro.p { background: var(--p); } .macro.g { background: var(--g); } .macro.l { background: var(--l); }
+.macros-mini { color: var(--muted); }
+
+/* ---------- Vue Jour ---------- */
+.nav-date { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.nav-date h2 { font-size: 1.02rem; margin: 0; text-transform: capitalize; text-align: center; flex: 1; }
+.pbar { margin-bottom: 10px; }
+.pbar-head { display: flex; justify-content: space-between; font-size: .82rem; font-weight: 600; margin-bottom: 3px; }
+.pbar-track { height: 10px; background: #e4e8e4; border-radius: 999px; overflow: hidden; }
+.pbar-fill { height: 100%; border-radius: 999px; background: var(--green-light); transition: width .3s; }
+.pbar.p .pbar-fill { background: var(--p); }
+.pbar.g .pbar-fill { background: var(--g); }
+.pbar.l .pbar-fill { background: var(--l); }
+.pbar-fill.over { background: var(--danger) !important; }
+
+.meal-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 10px; }
+.meal-card-head { display: flex; align-items: center; gap: 8px; }
+.meal-card-head small { color: var(--muted); }
+.meal-kcal { margin-left: auto; font-weight: 700; color: var(--green); }
+.meal-card ul { margin: 6px 0; padding-left: 18px; font-size: .87rem; }
+.meal-list { padding-left: 18px; font-size: .92rem; }
+
+/* ---------- Tableau nutriments ---------- */
+.nutri-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 8px 0; }
+.nutri-table td, .nutri-table th { padding: 4px 6px; border-bottom: 1px solid #eef1ee; text-align: left; }
+.nutri-table .num, .nutri-table .pct { text-align: right; white-space: nowrap; }
+.nutri-table tr.sub td { color: var(--muted); padding-left: 18px; font-size: .8rem; }
+details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 6px 0; }
+
+/* ---------- Vue Semaine ---------- */
+.week-day { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; margin-bottom: 8px; }
+.week-day.empty { opacity: .55; }
+.week-day-head { display: flex; justify-content: space-between; font-size: .92rem; }
+.week-day ul { margin: 6px 0 0; padding-left: 18px; font-size: .83rem; }
+.week-day li { margin-bottom: 2px; }
+
+/* ---------- Réglages ---------- */
+.radio-line { display: block; padding: 8px 0; font-size: .95rem; }
+.radio-line small { display: block; color: var(--muted); margin-left: 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; }
+.form-grid input, .form-grid select {
+  padding: 10px; border: 1px solid #d0d6d0; border-radius: 8px; font-size: .95rem; background: #fff; width: 100%;
+}
+.calc-result { font-size: .9rem; background: #e8f5e9; border-radius: 10px; padding: 0; }
+.calc-result:not(:empty) { padding: 10px; }
+.settings-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Navigation basse ---------- */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+  display: flex; background: #fff; box-shadow: 0 -2px 8px rgba(0,0,0,.1);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px;
+  border: none; background: none; padding: 8px 0 6px;
+  font-size: .72rem; color: var(--muted); cursor: pointer;
+}
+.nav-btn span { font-size: 1.25rem; }
+.nav-btn.active { color: var(--green); font-weight: 700; }
+
+/* ---------- Modale ---------- */
+.modal {
+  position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.5);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.modal-content {
+  background: #fff; border-radius: 18px 18px 0 0; padding: 18px;
+  width: 100%; max-width: 560px; max-height: 85vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.modal-content h2 { margin: 0 0 4px; font-size: 1.05rem; }
+
+/* ============================================================
+   Z FOLD — écran externe (étroit : Fold 4/5 ≈ 344-376 px CSS)
+   ============================================================ */
+@media (max-width: 430px) {
+  .tile-grid { grid-template-columns: repeat(3, 1fr); }
+  .tile { min-height: 108px; padding: 8px 4px 6px; }
+  .tile-emoji { font-size: 1.7rem; }
+  .app-header .subtitle { display: none; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Z FOLD — écran interne déplié (≈ 600-840 px CSS, quasi carré)
+   Double panneau : vignettes à gauche, plat en cours à droite.
+   ============================================================ */
+@media (min-width: 600px) {
+  .saisie-layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; }
+  .saisie-right { position: sticky; top: 64px; }
+  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+  .modal { align-items: center; }
+  .modal-content { border-radius: 18px; }
+}
+
+/* Posture pliée à plat (Flex mode / pliure verticale) : on évite que
+   le panneau du plat passe sous la charnière. */
+@media (horizontal-viewport-segments: 2) {
+  .saisie-layout { grid-template-columns: calc(50vw - 24px) 1fr; gap: 28px; }
+}
+
+/* ============================================================
+   Impression / export PDF du bilan hebdomadaire
+   ============================================================ */
+.print-only { display: none; }
+@media print {
+  body { background: #fff; padding: 0; font-size: 11pt; }
+  .app-header, .bottom-nav, .nav-date button, #download-pdf,
+  #view-saisie, #view-jour, #view-reglages, .modal { display: none !important; }
+  #view-semaine { display: block !important; }
+  .print-only { display: block; margin-bottom: 12px; }
+  .print-only h1 { font-size: 16pt; margin: 0 0 4px; }
+  .card, .week-day { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  details { display: block; }
+  details > * { display: block; }
+  details summary { list-style: none; }
+}
