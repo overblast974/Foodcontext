@@ -139,6 +139,19 @@ function esc(s) {
 
 /* ================= Vues ================= */
 const $ = sel => document.querySelector(sel);
+
+/* Messages bienveillants — l'app est un repère, pas un juge. On rappelle que les
+   variations sont normales et qu'un écart ponctuel n'a aucune importance, pour
+   éviter que le suivi ne vire à l'obsession. */
+const GENTLE_DAY = `<p class="gentle-note">🌱 Ces objectifs sont des repères, pas des règles.
+  Une seule journée ne fait pas un bilan : vise la régularité sur la durée, pas la perfection.</p>`;
+const GENTLE_WEIGHT = `<p class="gentle-note">🌱 Pèse-toi au plus <b>une fois par semaine</b>
+  (à jeun, le même jour). Au quotidien le poids fluctue de 1 à 2 kg selon l'eau et la digestion :
+  ça ne veut rien dire. C'est la pente sur plusieurs semaines qui compte.</p>`;
+const GENTLE_MACRO = `<p class="gentle-note">🌱 Ce sont des <b>moyennes</b> indicatives, pas des
+  cibles à atteindre au gramme près chaque jour. Ta diététicienne reste la référence, et un repas
+  « hors cadre » de temps en temps fait partie d'une alimentation équilibrée.</p>`;
+
 const views = ["saisie", "jour", "semaine", "sport", "reglages"];
 
 function showView(name) {
@@ -331,7 +344,8 @@ function renderJour() {
     progressBar("Calories", t.kcal, tg.kcal, "kcal", "c") +
     progressBar("Protéines", t.prot, tg.prot, "g", "p") +
     progressBar("Glucides", t.carb, tg.carb, "g", "g") +
-    progressBar("Lipides", t.fat, tg.fat, "g", "l");
+    progressBar("Lipides", t.fat, tg.fat, "g", "l") +
+    GENTLE_DAY;
 
   const meals = state.journal[key] || [];
   $("#jour-meals").innerHTML = meals.length ? meals.map(m => {
@@ -518,7 +532,7 @@ function renderPoids() {
     <div class="card">
       <h2>⚖️ Mon poids</h2>
       <div class="weight-form">
-        <label>Poids du jour (kg)
+        <label>Mon poids (kg)
           <input id="weight-input" type="number" min="25" max="350" step="0.1"
                  inputmode="decimal" value="${value}" placeholder="${fmt(last, 1)}">
         </label>
@@ -526,6 +540,7 @@ function renderPoids() {
       </div>
       ${ks.length ? weightGraphSVG() + stats : `<div class="empty-state"><span class="emoji">⚖️</span>
         <b>Aucun poids enregistré.</b><br>Saisissez votre poids ci-dessus pour démarrer le suivi.</div>`}
+      ${GENTLE_WEIGHT}
     </div>`;
   $("#sport-content").innerHTML = content;
   const inp = $("#weight-input"), btn = $("#weight-save");
@@ -550,9 +565,9 @@ function saveTodayWeight(val) {
 function macroKgRow(label, cls, val, lo, hi) {
   const maxS = Math.max(hi, val) * 1.25 || 1;
   const pc = v => Math.max(0, Math.min(100, v / maxS * 100));
-  let status = "Optimal", scls = "ok";
-  if (val < lo) { status = "Faible"; scls = "low"; }
-  else if (val > hi) { status = "Élevé"; scls = "high"; }
+  let status = "Dans la zone", scls = "ok";
+  if (val < lo) { status = "En-dessous"; scls = "low"; }
+  else if (val > hi) { status = "Au-dessus"; scls = "high"; }
   return `<div class="mk-row">
       <div class="mk-head"><span class="macro ${cls}">${label}</span>
         <span>${fmt(val, 2)} g/kg</span>
@@ -602,7 +617,8 @@ function renderMacrosKg() {
         <span class="macro g">G ${fmt(avg.carb)} g</span>
         <span class="macro l">L ${fmt(avg.fat)} g</span>
       </div>
-    </div>`;
+    </div>
+    ${GENTLE_MACRO}`;
 }
 
 function renderSport() {

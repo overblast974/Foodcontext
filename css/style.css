@@ -318,6 +318,11 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 
 .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- Vue Sport (poids + macros/kg) ---------- */
+.gentle-note {
+  font-size: .82rem; line-height: 1.5; color: var(--muted);
+  background: var(--tint-green); border-radius: var(--radius-s);
+  padding: 10px 12px; margin: 12px 0 2px;
+}
 .seg-control { display: flex; gap: 6px; background: var(--track); padding: 5px; border-radius: 999px; margin-bottom: 14px; }
 .seg {
   flex: 1; border: none; background: none; padding: 9px 8px; border-radius: 999px;
