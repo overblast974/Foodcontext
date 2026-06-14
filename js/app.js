@@ -14,7 +14,7 @@ const state = {
   settings: Store.get("fc_settings", {
     mode: "manual",
     targets: { kcal: 2000, prot: 90, carb: 230, fat: 70 },
-    profile: { sex: "h", age: 35, kg: 75, cm: 175, pal: 1.375, goal: 0 },
+    profile: { sex: "h", age: 35, kg: 75, cm: 175, pal: 1.375, goal: 0, protMode: "anses" },
   }),
   journal: Store.get("fc_journal", {}),       // { "YYYY-MM-DD": [meal, ...] }
   customFoods: Store.get("fc_customFoods", []),
@@ -86,9 +86,14 @@ function dayTotals(dateKey) {
  *      Homme : MB = 10×poids(kg) + 6,25×taille(cm) − 5×âge + 5
  *      Femme : MB = 10×poids(kg) + 6,25×taille(cm) − 5×âge − 161
  *  - Dépense totale = MB × NAP (niveau d'activité physique, FAO/OMS).
- *  - Répartition des macronutriments selon les repères ANSES (2021) :
- *      protéines 15 % de l'AET, lipides 35-40 % (on retient 37,5 %),
- *      glucides : le reste (~47,5 %).
+ *  - Répartition des macronutriments :
+ *      • Mode « ANSES 2021 » (par défaut) : protéines 15 % de l'AET,
+ *        lipides 35-40 % (on retient 37,5 %), glucides le reste (~47,5 %).
+ *      • Mode « Sportif (prise de muscle) » : protéines fixées au poids de corps
+ *        (1,8 g/kg, fourchette haute des recommandations de l'ISSN/EFSA pour la
+ *        prise de masse), lipides 30 % de l'AET, glucides le reste (le carburant
+ *        de l'entraînement). Les protéines sont plafonnées à 35 % de l'AET pour
+ *        rester physiologiques même chez les profils très légers/hypocaloriques.
  *    1 g protéines = 4 kcal ; 1 g glucides = 4 kcal ; 1 g lipides = 9 kcal.
  */
 function computeTargets(p) {
@@ -96,6 +101,13 @@ function computeTargets(p) {
   const tdee = bmr * p.pal + Number(p.goal);
   // Plancher de sécurité différencié (AND/ANSES) : 1500 kcal homme, 1200 kcal femme.
   const kcal = Math.max(p.sex === "h" ? 1500 : 1200, Math.round(tdee));
+  if (p.protMode === "sport") {
+    const protMax = Math.floor(kcal * 0.35 / 4);
+    const prot = Math.min(Math.round(1.8 * p.kg), protMax);
+    const fat = Math.round(kcal * 0.30 / 9);
+    const carb = Math.max(0, Math.round((kcal - prot * 4 - fat * 9) / 4));
+    return { kcal, prot, fat, carb };
+  }
   return {
     kcal,
     prot: Math.round(kcal * 0.15 / 4),
@@ -429,15 +441,21 @@ function renderReglages() {
   const p = s.profile;
   $("#p-sex").value = p.sex; $("#p-age").value = p.age; $("#p-kg").value = p.kg;
   $("#p-cm").value = p.cm; $("#p-pal").value = p.pal; $("#p-goal").value = p.goal;
+  $("#p-protmode").value = p.protMode || "anses";
 
   if (s.mode === "calc") {
     const t = computeTargets(p);
+    const sport = (p.protMode || "anses") === "sport";
+    const reparti = sport
+      ? `répartition sportive (protéines ${fmt(t.prot)} g ≈ 1,8 g/kg de poids,
+         lipides 30 %, glucides le reste pour l'entraînement)`
+      : `répartition ANSES 2021 (protéines 15 %, lipides 37,5 %,
+         glucides 47,5 % de l'apport énergétique)`;
     $("#calc-result").innerHTML =
       `<b>Objectifs calculés :</b> ${fmt(t.kcal)} kcal/j — Protéines ${fmt(t.prot)} g ·
        Glucides ${fmt(t.carb)} g · Lipides ${fmt(t.fat)} g
        <br><small>Méthode : métabolisme de base Mifflin-St Jeor (1990) × niveau
-       d'activité (FAO/OMS), répartition ANSES 2021 (protéines 15 %, lipides 37,5 %,
-       glucides 47,5 % de l'apport énergétique). ⚠️ Ces formules valent pour un
+       d'activité (FAO/OMS), ${reparti}. ⚠️ Ces formules valent pour un
        adulte en bonne santé : en cas de perte de poids encadrée, de plus de
        65 ans ou de pathologie, les besoins (notamment en protéines) diffèrent —
        utilisez la saisie manuelle avec les valeurs de votre diététicien(ne),
@@ -453,10 +471,11 @@ function bindReglages() {
       state.settings.targets[k] = Number(e.target.value) || 0; saveSettings();
     });
   });
-  [["sex", "p-sex"], ["age", "p-age"], ["kg", "p-kg"], ["cm", "p-cm"], ["pal", "p-pal"], ["goal", "p-goal"]]
+  [["sex", "p-sex"], ["age", "p-age"], ["kg", "p-kg"], ["cm", "p-cm"], ["pal", "p-pal"], ["goal", "p-goal"], ["protMode", "p-protmode"]]
     .forEach(([k, id]) => {
       $("#" + id).addEventListener("change", e => {
-        state.settings.profile[k] = k === "sex" ? e.target.value : Number(e.target.value);
+        // sex et protMode sont des chaînes ; les autres champs sont numériques.
+        state.settings.profile[k] = (k === "sex" || k === "protMode") ? e.target.value : Number(e.target.value);
         saveSettings(); renderReglages();
       });
     });
