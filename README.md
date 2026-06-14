@@ -22,9 +22,12 @@ diététicien(ne)**, et optimisée pour les **Galaxy Z Fold 4 → 7** (écran ex
 - **Objectifs journaliers** :
   - *Saisie manuelle* (recommandé) : valeurs prescrites par la diététicienne ;
   - *Calcul automatique* : métabolisme de base **Mifflin-St Jeor (1990)**
-    × niveau d'activité physique (FAO/OMS), répartition des macronutriments
-    selon les repères **ANSES 2021** (protéines 15 %, lipides 37,5 %,
-    glucides 47,5 % de l'apport énergétique).
+    × niveau d'activité physique (FAO/OMS), avec deux répartitions de
+    macronutriments au choix :
+    - **Standard ANSES 2021** (protéines 15 %, lipides 37,5 %,
+      glucides 47,5 % de l'apport énergétique) ;
+    - **Sportif / prise de muscle** (protéines **1,8 g/kg** de poids de corps,
+      lipides 30 %, glucides le reste) + objectif **prise de masse +500 kcal/j**.
 - **Aliments personnalisés** : ajoutez vos propres plats avec leurs valeurs.
 - **100 % local** : aucune donnée n'est envoyée sur internet
   (`localStorage` + export/import JSON de sauvegarde).
@@ -61,14 +64,23 @@ python3 -m http.server 8000
 
 ## 🍛 Base alimentaire
 
-≈ 60 aliments et plats réunionnais avec valeurs **par portion standard**,
-estimées à partir de la table **CIQUAL (ANSES)** et de recettes traditionnelles :
+≈ 85 aliments et plats avec valeurs **par portion standard**, estimées à partir
+de la table **CIQUAL (ANSES)** et de recettes traditionnelles :
 riz/zambrocal, grains (lentilles de Cilaos, haricots rouges, pois du Cap),
 caris (poulet, poisson, camarons, ti-jacques…), rougail saucisses/morue,
 civet zourite, cabri massalé, boucané, sarcives, brèdes, achards, rougails
-d'accompagnement (tomate, mangue, dakatine), gratin chouchou, samoussas,
-bouchons, bonbons piment, fruits péi (letchis, mangue, ananas Victoria,
-goyaviers…), gâteau patate, macatia, boissons (jus, Dodo, rhum arrangé…).
+d'accompagnement (tomate, mangue, dakatine), gratin chouchou, fruits péi
+(letchis, mangue, ananas Victoria, goyaviers…), gâteau patate, macatia,
+boissons (jus, Dodo, rhum arrangé…).
+
+- **Snacks détaillés par garniture** : les samoussas (légumes, fromage, poulet,
+  viande, thon) et bouchons (porc, poulet, crevette) sont distingués — une part
+  de samoussa fromage et une de samoussa poulet n'ont pas les mêmes valeurs.
+- **Catégorie « Sport & protéines »** : plats simples pour le suivi des sportifs
+  (prise de muscle, sèche) — blanc de poulet/dinde, steak haché 5 %, poisson
+  blanc, saumon, thon au naturel, blancs d'œufs, flocons d'avoine, riz/pâtes
+  complètes, fromage blanc 0 %, skyr, shaker de whey, amandes, brocolis et
+  haricots verts.
 
 > ⚠️ Les valeurs sont **indicatives** (les recettes familiales varient) et ne
 > remplacent pas l'avis d'un professionnel de santé. À propos des photos de

@@ -82,6 +82,15 @@
     <div id="semaine-content"></div>
   </section>
 
+  <!-- ============ VUE SPORT (poids + macros/kg) ============ -->
+  <section id="view-sport" class="view" hidden>
+    <div class="seg-control" role="tablist" aria-label="Suivi sportif">
+      <button id="sport-tab-poids" class="seg active" role="tab">📈 Poids</button>
+      <button id="sport-tab-macros" class="seg" role="tab">🍗 Macros / kg</button>
+    </div>
+    <div id="sport-content"></div>
+  </section>
+
   <!-- ============ VUE RÉGLAGES ============ -->
   <section id="view-reglages" class="view" hidden>
     <div class="card">
@@ -119,7 +128,14 @@
             <option value="-500">Perte de poids (−500 kcal/j)</option>
             <option value="-250">Perte douce (−250 kcal/j)</option>
             <option value="0">Maintien</option>
-            <option value="300">Prise de masse (+300 kcal/j)</option>
+            <option value="300">Prise de masse douce (+300 kcal/j)</option>
+            <option value="500">Prise de masse (+500 kcal/j)</option>
+          </select>
+        </label>
+        <label>Répartition des protéines
+          <select id="p-protmode">
+            <option value="anses">Standard (ANSES, 15 %)</option>
+            <option value="sport">Sportif · prise de muscle (1,8 g/kg)</option>
           </select>
         </label>
       </div>
@@ -152,6 +168,7 @@
   <button id="nav-saisie" class="nav-btn"><span>🍛</span>Saisie</button>
   <button id="nav-jour" class="nav-btn"><span>📅</span>Jour</button>
   <button id="nav-semaine" class="nav-btn"><span>📊</span>Semaine</button>
+  <button id="nav-sport" class="nav-btn"><span>💪</span>Sport</button>
   <button id="nav-reglages" class="nav-btn"><span>⚙️</span>Réglages</button>
 </nav>
 

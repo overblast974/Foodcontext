@@ -317,6 +317,52 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; padding: 
 .calc-result:not(:empty) { padding: 12px; }
 .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* ---------- Vue Sport (poids + macros/kg) ---------- */
+.gentle-note {
+  font-size: .82rem; line-height: 1.5; color: var(--muted);
+  background: var(--tint-green); border-radius: var(--radius-s);
+  padding: 10px 12px; margin: 12px 0 2px;
+}
+.seg-control { display: flex; gap: 6px; background: var(--track); padding: 5px; border-radius: 999px; margin-bottom: 14px; }
+.seg {
+  flex: 1; border: none; background: none; padding: 9px 8px; border-radius: 999px;
+  font-size: .9rem; font-weight: 700; color: var(--muted); cursor: pointer; min-height: 42px;
+}
+.seg.active { background: var(--card); color: var(--green); box-shadow: var(--shadow); }
+
+.weight-form { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin: 4px 0 12px; }
+.weight-form label { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; min-width: 130px; }
+.weight-form input {
+  padding: 10px; border: 1px solid var(--ctl-border); border-radius: 10px;
+  font-size: 1rem; min-height: 44px; background: var(--field); color: var(--text); width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.weight-form .btn { min-height: 44px; }
+
+.wgraph { width: 100%; height: auto; display: block; margin: 6px 0 2px; }
+.wgraph-area { fill: rgba(46, 125, 50, .10); }
+.wgraph-line { fill: none; stroke: var(--green-light); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.wgraph-dot { fill: var(--green); }
+.wgraph-grid { stroke: var(--line); stroke-width: 1; }
+.wgraph-txt { fill: var(--muted); font-size: 9px; font-variant-numeric: tabular-nums; }
+
+.stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; }
+.stat { flex: 1; min-width: 90px; background: var(--tint-green); border-radius: var(--radius-s); padding: 10px 8px; text-align: center; }
+.stat b { display: block; font-size: 1.25rem; color: var(--green); font-variant-numeric: tabular-nums; }
+.stat.neg b { color: var(--danger); }
+.stat small { color: var(--muted); font-size: .74rem; }
+
+.mk-row { margin-bottom: 16px; }
+.mk-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .88rem; font-weight: 700; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.mk-track { position: relative; height: 14px; background: var(--track); border-radius: 999px; }
+.mk-zone { position: absolute; top: 0; bottom: 0; background: rgba(46, 125, 50, .28); border-radius: 999px; }
+.mk-marker { position: absolute; top: -3px; bottom: -3px; width: 4px; border-radius: 2px; background: var(--text); transform: translateX(-2px); }
+.mk-status { font-size: .72rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.mk-status.ok { background: var(--green); color: #fff; }
+.mk-status.low { background: var(--accent); color: #3a2400; }
+.mk-status.high { background: #7b1fa2; color: #fff; }
+.mk-legend { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+
 /* ---------- Navigation basse ---------- */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
