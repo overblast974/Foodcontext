@@ -558,7 +558,7 @@ function macroKgRow(label, cls, val, lo, hi) {
         <span>${fmt(val, 2)} g/kg</span>
         <span class="mk-status ${scls}">${status}</span></div>
       <div class="mk-track">
-        <div class="mk-zone" style="left:${pc(lo)}%;width:${pc(hi) - pc(lo)}%"></div>
+        <div class="mk-zone" style="left:${pc(lo)}%;width:${Math.max(0, pc(hi) - pc(lo))}%"></div>
         <div class="mk-marker" style="left:${pc(val)}%"></div>
       </div>
       <div class="mk-legend">Recommandé sportif : ${fmt(lo, 1)}–${fmt(hi, 1)} g/kg</div>
@@ -588,11 +588,11 @@ function renderMacrosKg() {
         sur les 7 derniers, rapportée à <b>${fmt(kg, 1)} kg</b> de poids de corps.</p>
       ${macroKgRow("Protéines", "p", protKg, 1.6, 2.2)}
       ${macroKgRow("Glucides", "g", carbKg, 3, 6)}
-      ${macroKgRow("Lipides", "l", fatKg, 0.8, 1.2)}
+      ${macroKgRow("Lipides", "l", fatKg, 0.8, 1.5)}
       <p class="mk-legend">Repères pour la prise de muscle (consensus ISSN 2017 / EFSA) :
         protéines <b>1,6–2,2 g/kg</b>, glucides <b>3–6 g/kg</b> (plus si entraînement
-        volumineux), lipides ≥ <b>0,8 g/kg</b> (santé hormonale). À individualiser avec
-        votre diététicien(ne).</p>
+        volumineux), lipides <b>0,8–1,5 g/kg</b> (≥ 0,8 pour la santé hormonale). À
+        individualiser avec votre diététicien(ne).</p>
     </div>
     <div class="card">
       <h3>Apports moyens / jour (${days} j)</h3>
@@ -680,9 +680,27 @@ function bindReglages() {
     file.text().then(txt => {
       const data = JSON.parse(txt);
       if (data.journal) { state.journal = data.journal; saveJournal(); }
-      if (data.settings) { state.settings = data.settings; saveSettings(); }
+      if (data.settings) {
+        // Fusion avec les valeurs par défaut : un export d'une version antérieure
+        // (sans protMode, kg…) ne laisse jamais de champ manquant.
+        const d = data.settings;
+        state.settings = {
+          mode: d.mode === "calc" ? "calc" : "manual",
+          targets: { kcal: 2000, prot: 90, carb: 230, fat: 70, ...(d.targets || {}) },
+          profile: { sex: "h", age: 35, kg: 75, cm: 175, pal: 1.375, goal: 0, protMode: "anses", ...(d.profile || {}) },
+        };
+        saveSettings();
+      }
       if (data.customFoods) { state.customFoods = data.customFoods; saveCustomFoods(); }
-      if (data.weights) { state.weights = data.weights; saveWeights(); }
+      if (data.weights && typeof data.weights === "object") {
+        // Ne garde que des couples date ISO / poids numérique plausibles.
+        const clean = {};
+        for (const [k, v] of Object.entries(data.weights)) {
+          const n = Number(v);
+          if (/^\d{4}-\d{2}-\d{2}$/.test(k) && n >= 25 && n <= 350) clean[k] = Math.round(n * 10) / 10;
+        }
+        state.weights = clean; saveWeights();
+      }
       alert("Données importées ✅"); renderReglages();
     }).catch(() => alert("Fichier invalide"));
   });
