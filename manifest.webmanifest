@@ -1,7 +1,7 @@
 {
-  "name": "Kalori Péi — Suivi calories La Réunion",
+  "name": "Kalori Péi — Suivi calories par région",
   "short_name": "Kalori Péi",
-  "description": "Suivi calorique rapide spécialisé cuisine réunionnaise : vignettes de plats, bilans jour/semaine avec macro et micronutriments, export PDF pour votre diététicien(ne). 100 % gratuit et hors-ligne.",
+  "description": "Suivi calorique rapide — cuisine de France métropolitaine et de La Réunion, par région : vignettes de plats, bilans jour/semaine avec macro et micronutriments, suivi du poids, export PDF pour votre diététicien(ne). 100 % gratuit et hors-ligne.",
   "lang": "fr",
   "id": "./",
   "start_url": "./index.html",

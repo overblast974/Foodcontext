@@ -15,6 +15,7 @@ const state = {
     mode: "manual",
     targets: { kcal: 2000, prot: 90, carb: 230, fat: 70 },
     profile: { sex: "h", age: 35, kg: 75, cm: 175, pal: 1.375, goal: 0, protMode: "anses" },
+    region: "reunion",
   }),
   journal: Store.get("fc_journal", {}),       // { "YYYY-MM-DD": [meal, ...] }
   customFoods: Store.get("fc_customFoods", []),
@@ -189,7 +190,14 @@ function tileHTML(f) {
     </button>`;
 }
 
+function activeRegion() { return state.settings.region || "reunion"; }
+
 function renderSaisie() {
+  const region = activeRegion();
+  const rsel = $("#region-select");
+  if (rsel) rsel.innerHTML = REGIONS.map(r =>
+    `<option value="${r.id}" ${r.id === region ? "selected" : ""}>${r.emoji} ${esc(r.label)}</option>`).join("");
+
   const cats = [{ id: "all", label: "Tout", color: "#555" }]
     .concat(FOOD_CATEGORIES.filter(c => c.id !== "perso" || state.customFoods.length));
   $("#cat-bar").innerHTML = cats.map(c =>
@@ -198,6 +206,10 @@ function renderSaisie() {
 
   const search = ($("#food-search").value || "").toLowerCase().trim();
   let foods = allFoods();
+  // Sans recherche : on n'affiche que les plats universels/nationaux + ceux de la
+  // région choisie (+ aliments perso). Avec recherche : on cherche dans toute la base
+  // (rien n'est inaccessible, ex. un cari quand on est en Bretagne).
+  if (!search) foods = foods.filter(f => !f.region || f.region === "all" || f.region === region || f.cat === "perso");
   if (state.activeCat !== "all") foods = foods.filter(f => f.cat === state.activeCat);
   if (search) foods = foods.filter(f => f.name.toLowerCase().includes(search));
   $("#tile-grid").innerHTML = foods.map(tileHTML).join("") +
@@ -631,6 +643,10 @@ function renderSport() {
 /* ---------- Vue Réglages ---------- */
 function renderReglages() {
   const s = state.settings;
+  const region = activeRegion();
+  $("#region-select-2").innerHTML = REGIONS.map(r =>
+    `<option value="${r.id}" ${r.id === region ? "selected" : ""}>${r.emoji} ${esc(r.label)}</option>`).join("");
+
   $("#mode-manual").checked = s.mode === "manual";
   $("#mode-calc").checked = s.mode === "calc";
   $("#manual-form").hidden = s.mode !== "manual";
@@ -704,6 +720,7 @@ function bindReglages() {
           mode: d.mode === "calc" ? "calc" : "manual",
           targets: { kcal: 2000, prot: 90, carb: 230, fat: 70, ...(d.targets || {}) },
           profile: { sex: "h", age: 35, kg: 75, cm: 175, pal: 1.375, goal: 0, protMode: "anses", ...(d.profile || {}) },
+          region: d.region || "reunion",
         };
         saveSettings();
       }
@@ -826,6 +843,12 @@ function bindEvents() {
     if (chip) { state.activeCat = chip.dataset.cat; renderSaisie(); }
   });
   $("#food-search").addEventListener("input", renderSaisie);
+  $("#region-select").addEventListener("change", e => {
+    state.settings.region = e.target.value; saveSettings(); renderSaisie();
+  });
+  $("#region-select-2").addEventListener("change", e => {
+    state.settings.region = e.target.value; saveSettings(); renderReglages(); renderSaisie();
+  });
 
   // Appui court = ajouter une dose ; appui long (500 ms) = fiche aliment / photo.
   const grid = $("#tile-grid");
@@ -900,6 +923,8 @@ function initFirstHint() {
 
 /* ================= Init ================= */
 document.addEventListener("DOMContentLoaded", () => {
+  // Utilisateur d'avant l'ajout des régions : on conserve La Réunion par défaut.
+  if (!state.settings.region) { state.settings.region = "reunion"; saveSettings(); }
   $("#meal-type").value = mealTypeForNow();
   bindEvents();
   initFirstHint();

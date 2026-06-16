@@ -1,22 +1,42 @@
 /*
- * Base alimentaire spécialisée cuisine de La Réunion.
+ * Base alimentaire — cuisine de France métropolitaine et de La Réunion.
  * Valeurs nutritionnelles PAR PORTION STANDARD (1 dose), estimées à partir
- * de la table CIQUAL (ANSES) et de recettes traditionnelles réunionnaises.
+ * de la table CIQUAL (ANSES) et de recettes traditionnelles.
  * Unités : kcal ; protéines/glucides/lipides/fibres/sucres/AG saturés en g ;
  * sel en g ; calcium/fer/magnésium/potassium/vitC en mg.
+ * Champ `region` : "all" = aliment/plat universel ou national (visible partout) ;
+ * sinon un id de région culinaire (spécialité, visible quand la région est active).
  */
 const FOOD_CATEGORIES = [
-  { id: "bases",    label: "Riz & féculents", color: "#f5d76e" },
-  { id: "grains",   label: "Grains",          color: "#c0795a" },
-  { id: "caris",    label: "Caris & plats",   color: "#e67e22" },
+  { id: "bases",    label: "Féculents",        color: "#f5d76e" },
+  { id: "grains",   label: "Légumineuses",     color: "#c0795a" },
+  { id: "caris",    label: "Plats cuisinés",   color: "#e67e22" },
   { id: "sportif",  label: "Sport & protéines", color: "#17a2b8" },
-  { id: "accomp",   label: "Brèdes & rougails", color: "#27ae60" },
-  { id: "snacks",   label: "Snacks péi",      color: "#d35400" },
-  { id: "fruits",   label: "Fruits péi",      color: "#e74c3c" },
+  { id: "accomp",   label: "Légumes & accomp.", color: "#27ae60" },
+  { id: "snacks",   label: "Snacks & en-cas",  color: "#d35400" },
+  { id: "fruits",   label: "Fruits",           color: "#e74c3c" },
   { id: "desserts", label: "Desserts & pains", color: "#9b59b6" },
-  { id: "boissons", label: "Boissons",        color: "#2980b9" },
-  { id: "divers",   label: "Divers",          color: "#7f8c8d" },
-  { id: "perso",    label: "Mes aliments",    color: "#16a085" },
+  { id: "boissons", label: "Boissons",         color: "#2980b9" },
+  { id: "divers",   label: "Divers",           color: "#7f8c8d" },
+  { id: "perso",    label: "Mes aliments",     color: "#16a085" },
+];
+
+/* Régions culinaires (+ La Réunion). Choisie au démarrage : la région active
+   fait apparaître ses spécialités, en plus des plats nationaux (region "all"). */
+const REGIONS = [
+  { id: "reunion",   emoji: "🌋", label: "La Réunion" },
+  { id: "idf",       emoji: "🗼", label: "Île-de-France & classiques" },
+  { id: "bretagne",  emoji: "🥞", label: "Bretagne" },
+  { id: "normandie", emoji: "🧈", label: "Normandie" },
+  { id: "nord",      emoji: "🍟", label: "Nord & Ch'ti" },
+  { id: "alsace",    emoji: "🥨", label: "Alsace-Lorraine" },
+  { id: "est",       emoji: "🍷", label: "Bourgogne & Est" },
+  { id: "alpes",     emoji: "🧀", label: "Savoie & Alpes" },
+  { id: "lyon",      emoji: "🍲", label: "Lyon & Rhône" },
+  { id: "auvergne",  emoji: "🥔", label: "Auvergne & Centre" },
+  { id: "sudouest",  emoji: "🦆", label: "Sud-Ouest & Gascogne" },
+  { id: "basque",    emoji: "🌶️", label: "Pays Basque" },
+  { id: "provence",  emoji: "🫒", label: "Provence & Méditerranée" },
 ];
 
 const FOODS = [
@@ -217,6 +237,191 @@ const FOODS = [
     kcal: 160, prot: 2, carb: 4, fat: 15, fibre: 5.2, sugar: 0.8, sat: 2.5, salt: 0.01, ca: 12, fe: 0.6, mg: 29, k: 485, vitc: 10 },
   { id: "huile", cat: "divers", emoji: "🫒", name: "Huile (assaisonnement)", portion: "1 c. à s. (10 g)",
     kcal: 90, prot: 0, carb: 0, fat: 10, fibre: 0, sugar: 0, sat: 1.5, salt: 0, ca: 0, fe: 0, mg: 0, k: 0, vitc: 0 },
+
+  // ============================================================
+  //  CUISINE DE FRANCE MÉTROPOLITAINE
+  //  Plats composés : valeurs par portion estimées (table CIQUAL/ANSES).
+  //  Les micronutriments (Ca, Fe, Mg, K, vit. C) ne sont pas détaillés ici
+  //  (mis à 0) — l'essentiel reste les calories et les macronutriments.
+  // ============================================================
+
+  // ---- Plats nationaux (region: all → visibles dans toutes les régions) ----
+  { id: "steak_frites", cat: "caris", region: "all", emoji: "🥩", name: "Steak-frites", portion: "1 assiette (300 g)",
+    kcal: 620, prot: 35, carb: 50, fat: 30, fibre: 4, sugar: 1, sat: 8, salt: 1.2 },
+  { id: "jambon_beurre", cat: "snacks", region: "all", emoji: "🥖", name: "Sandwich jambon-beurre", portion: "1 (180 g)",
+    kcal: 430, prot: 16, carb: 55, fat: 16, fibre: 2.5, sugar: 2, sat: 8, salt: 2.0 },
+  { id: "croque_monsieur", cat: "caris", region: "all", emoji: "🧀", name: "Croque-monsieur", portion: "1 (180 g)",
+    kcal: 400, prot: 20, carb: 28, fat: 23, fibre: 1.5, sugar: 3, sat: 12, salt: 2.0 },
+  { id: "quiche_lorraine", cat: "caris", region: "all", emoji: "🥧", name: "Quiche lorraine", portion: "1 part (150 g)",
+    kcal: 380, prot: 13, carb: 26, fat: 25, fibre: 1.2, sugar: 3, sat: 12, salt: 1.4 },
+  { id: "hachis_parmentier", cat: "caris", region: "all", emoji: "🥔", name: "Hachis parmentier", portion: "1 portion (300 g)",
+    kcal: 420, prot: 22, carb: 38, fat: 20, fibre: 3.5, sugar: 5, sat: 9, salt: 1.5 },
+  { id: "pates_bolo", cat: "caris", region: "all", emoji: "🍝", name: "Pâtes à la bolognaise", portion: "1 assiette (350 g)",
+    kcal: 480, prot: 22, carb: 65, fat: 14, fibre: 5, sugar: 8, sat: 5, salt: 1.4 },
+  { id: "pizza_margherita", cat: "caris", region: "all", emoji: "🍕", name: "Pizza margherita", portion: "½ pizza (200 g)",
+    kcal: 540, prot: 22, carb: 65, fat: 20, fibre: 4, sugar: 7, sat: 9, salt: 2.5 },
+  { id: "burger", cat: "caris", region: "all", emoji: "🍔", name: "Burger maison", portion: "1 (250 g)",
+    kcal: 600, prot: 30, carb: 45, fat: 33, fibre: 3, sugar: 8, sat: 13, salt: 2.2 },
+  { id: "poulet_roti", cat: "caris", region: "all", emoji: "🍗", name: "Poulet rôti", portion: "1 portion (180 g)",
+    kcal: 350, prot: 35, carb: 0, fat: 23, fibre: 0, sugar: 0, sat: 6, salt: 1.0 },
+  { id: "omelette", cat: "caris", region: "all", emoji: "🍳", name: "Omelette nature", portion: "1 (150 g)",
+    kcal: 250, prot: 18, carb: 1.5, fat: 19, fibre: 0, sugar: 1, sat: 5, salt: 1.0 },
+  { id: "salade_composee", cat: "accomp", region: "all", emoji: "🥗", name: "Salade composée", portion: "1 bol (250 g)",
+    kcal: 280, prot: 15, carb: 18, fat: 16, fibre: 4, sugar: 6, sat: 4, salt: 1.3 },
+  { id: "soupe_legumes", cat: "accomp", region: "all", emoji: "🍵", name: "Soupe de légumes", portion: "1 bol (250 g)",
+    kcal: 90, prot: 3, carb: 14, fat: 2.5, fibre: 3.5, sugar: 6, sat: 0.5, salt: 0.9 },
+  { id: "kebab", cat: "snacks", region: "all", emoji: "🥙", name: "Kebab / galette", portion: "1 (350 g)",
+    kcal: 700, prot: 30, carb: 70, fat: 33, fibre: 4, sugar: 6, sat: 9, salt: 2.8 },
+  { id: "croissant", cat: "desserts", region: "all", emoji: "🥐", name: "Croissant", portion: "1 (60 g)",
+    kcal: 250, prot: 5, carb: 26, fat: 14, fibre: 1, sugar: 6, sat: 8, salt: 0.5 },
+  { id: "pain_chocolat", cat: "desserts", region: "all", emoji: "🍫", name: "Pain au chocolat", portion: "1 (70 g)",
+    kcal: 300, prot: 6, carb: 32, fat: 16, fibre: 2, sugar: 12, sat: 9, salt: 0.5 },
+  { id: "baguette", cat: "desserts", region: "all", emoji: "🥖", name: "Pain / baguette", portion: "¼ (60 g)",
+    kcal: 160, prot: 5.5, carb: 32, fat: 1, fibre: 1.8, sugar: 1, sat: 0.2, salt: 0.7 },
+
+  // ---- Bretagne ----
+  { id: "galette_sarrasin", cat: "caris", region: "bretagne", emoji: "🥞", name: "Galette de sarrasin complète", portion: "1 (250 g)",
+    kcal: 400, prot: 18, carb: 40, fat: 19, fibre: 3, sugar: 2, sat: 9, salt: 2.0 },
+  { id: "moules_frites", cat: "caris", region: "bretagne", emoji: "🦪", name: "Moules-frites", portion: "1 portion (400 g)",
+    kcal: 600, prot: 28, carb: 60, fat: 27, fibre: 5, sugar: 2, sat: 5, salt: 2.5 },
+  { id: "crepe_sucree", cat: "desserts", region: "bretagne", emoji: "🥞", name: "Crêpe sucrée (beurre-sucre)", portion: "1 (80 g)",
+    kcal: 220, prot: 5, carb: 32, fat: 8, fibre: 1, sugar: 12, sat: 4.5, salt: 0.3 },
+  { id: "kouign_amann", cat: "desserts", region: "bretagne", emoji: "🧈", name: "Kouign-amann", portion: "1 part (80 g)",
+    kcal: 380, prot: 4, carb: 45, fat: 21, fibre: 1, sugar: 25, sat: 14, salt: 0.5 },
+  { id: "far_breton", cat: "desserts", region: "bretagne", emoji: "🍮", name: "Far breton", portion: "1 part (100 g)",
+    kcal: 220, prot: 6, carb: 36, fat: 5.5, fibre: 0.8, sugar: 22, sat: 3, salt: 0.2 },
+
+  // ---- Normandie ----
+  { id: "moules_creme", cat: "caris", region: "normandie", emoji: "🦪", name: "Moules à la crème", portion: "1 portion (300 g)",
+    kcal: 340, prot: 25, carb: 12, fat: 21, fibre: 1, sugar: 3, sat: 11, salt: 2.0 },
+  { id: "camembert_four", cat: "divers", region: "normandie", emoji: "🧀", name: "Camembert au four", portion: "1 portion (90 g)",
+    kcal: 250, prot: 16, carb: 1, fat: 20, fibre: 0, sugar: 1, sat: 13, salt: 1.4 },
+  { id: "tripes_caen", cat: "caris", region: "normandie", emoji: "🥘", name: "Tripes à la mode de Caen", portion: "1 portion (250 g)",
+    kcal: 280, prot: 24, carb: 6, fat: 17, fibre: 1, sugar: 3, sat: 7, salt: 1.8 },
+  { id: "teurgoule", cat: "desserts", region: "normandie", emoji: "🍮", name: "Teurgoule (riz au lait)", portion: "1 part (150 g)",
+    kcal: 230, prot: 6, carb: 38, fat: 6, fibre: 0.5, sugar: 24, sat: 4, salt: 0.2 },
+  { id: "tarte_pommes", cat: "desserts", region: "normandie", emoji: "🥧", name: "Tarte aux pommes", portion: "1 part (120 g)",
+    kcal: 280, prot: 3.5, carb: 40, fat: 12, fibre: 2, sugar: 24, sat: 6, salt: 0.3 },
+
+  // ---- Nord & Ch'ti ----
+  { id: "carbonnade", cat: "caris", region: "nord", emoji: "🍺", name: "Carbonnade flamande", portion: "1 portion (300 g)",
+    kcal: 420, prot: 32, carb: 18, fat: 24, fibre: 2, sugar: 6, sat: 9, salt: 1.8 },
+  { id: "welsh", cat: "caris", region: "nord", emoji: "🧀", name: "Welsh complet", portion: "1 (300 g)",
+    kcal: 650, prot: 30, carb: 30, fat: 45, fibre: 1.5, sugar: 4, sat: 22, salt: 2.8 },
+  { id: "ficelle_picarde", cat: "caris", region: "nord", emoji: "🥞", name: "Ficelle picarde", portion: "1 (200 g)",
+    kcal: 380, prot: 18, carb: 24, fat: 24, fibre: 1.5, sugar: 4, sat: 12, salt: 1.5 },
+  { id: "tarte_maroilles", cat: "caris", region: "nord", emoji: "🧀", name: "Tarte au maroilles", portion: "1 part (120 g)",
+    kcal: 360, prot: 14, carb: 28, fat: 22, fibre: 1.2, sugar: 3, sat: 12, salt: 1.6 },
+  { id: "gaufre", cat: "desserts", region: "nord", emoji: "🧇", name: "Gaufre sucrée", portion: "1 (60 g)",
+    kcal: 230, prot: 4, carb: 30, fat: 10, fibre: 1, sugar: 14, sat: 5, salt: 0.3 },
+
+  // ---- Alsace-Lorraine ----
+  { id: "choucroute", cat: "caris", region: "alsace", emoji: "🥨", name: "Choucroute garnie", portion: "1 assiette (450 g)",
+    kcal: 600, prot: 30, carb: 25, fat: 42, fibre: 6, sugar: 5, sat: 15, salt: 3.5 },
+  { id: "tarte_flambee", cat: "caris", region: "alsace", emoji: "🔥", name: "Tarte flambée", portion: "½ (150 g)",
+    kcal: 350, prot: 12, carb: 32, fat: 19, fibre: 2, sugar: 3, sat: 9, salt: 1.6 },
+  { id: "baeckeoffe", cat: "caris", region: "alsace", emoji: "🥘", name: "Baeckeoffe", portion: "1 portion (350 g)",
+    kcal: 400, prot: 28, carb: 35, fat: 16, fibre: 3, sugar: 4, sat: 6, salt: 1.6 },
+  { id: "bretzel", cat: "snacks", region: "alsace", emoji: "🥨", name: "Bretzel", portion: "1 (80 g)",
+    kcal: 240, prot: 7, carb: 47, fat: 3, fibre: 2, sugar: 2, sat: 1, salt: 2.2 },
+  { id: "kouglof", cat: "desserts", region: "alsace", emoji: "🍰", name: "Kouglof", portion: "1 part (70 g)",
+    kcal: 250, prot: 5, carb: 32, fat: 11, fibre: 1, sugar: 14, sat: 6, salt: 0.4 },
+
+  // ---- Bourgogne & Est ----
+  { id: "boeuf_bourguignon", cat: "caris", region: "est", emoji: "🍷", name: "Bœuf bourguignon", portion: "1 portion (300 g)",
+    kcal: 400, prot: 35, carb: 12, fat: 22, fibre: 2, sugar: 4, sat: 8, salt: 1.5 },
+  { id: "coq_vin", cat: "caris", region: "est", emoji: "🍗", name: "Coq au vin", portion: "1 portion (300 g)",
+    kcal: 380, prot: 33, carb: 10, fat: 21, fibre: 1.5, sugar: 3, sat: 7, salt: 1.4 },
+  { id: "oeufs_meurette", cat: "caris", region: "est", emoji: "🥚", name: "Œufs en meurette", portion: "1 portion (200 g)",
+    kcal: 320, prot: 16, carb: 14, fat: 22, fibre: 1.5, sugar: 3, sat: 7, salt: 1.3 },
+  { id: "gougeres", cat: "snacks", region: "est", emoji: "🧀", name: "Gougères", portion: "3 pièces (60 g)",
+    kcal: 220, prot: 8, carb: 16, fat: 14, fibre: 0.8, sugar: 1, sat: 8, salt: 0.8 },
+  { id: "escargots", cat: "caris", region: "est", emoji: "🐌", name: "Escargots de Bourgogne", portion: "6 pièces (90 g)",
+    kcal: 280, prot: 12, carb: 4, fat: 24, fibre: 0.5, sugar: 1, sat: 15, salt: 1.2 },
+
+  // ---- Savoie & Alpes ----
+  { id: "tartiflette", cat: "caris", region: "alpes", emoji: "🧀", name: "Tartiflette", portion: "1 portion (350 g)",
+    kcal: 560, prot: 20, carb: 38, fat: 36, fibre: 3, sugar: 4, sat: 20, salt: 1.8 },
+  { id: "raclette", cat: "caris", region: "alpes", emoji: "🫕", name: "Raclette (fromage + charcuterie)", portion: "1 portion (400 g)",
+    kcal: 700, prot: 35, carb: 30, fat: 48, fibre: 2.5, sugar: 3, sat: 28, salt: 3.0 },
+  { id: "fondue_savoyarde", cat: "caris", region: "alpes", emoji: "🫕", name: "Fondue savoyarde", portion: "1 portion (300 g)",
+    kcal: 650, prot: 33, carb: 35, fat: 42, fibre: 2, sugar: 3, sat: 26, salt: 2.5 },
+  { id: "gratin_dauphinois", cat: "accomp", region: "alpes", emoji: "🥔", name: "Gratin dauphinois", portion: "1 part (200 g)",
+    kcal: 300, prot: 6, carb: 24, fat: 20, fibre: 2.5, sugar: 4, sat: 13, salt: 0.9 },
+  { id: "diots", cat: "caris", region: "alpes", emoji: "🌭", name: "Diots de Savoie", portion: "1 portion (200 g)",
+    kcal: 480, prot: 22, carb: 6, fat: 41, fibre: 1, sugar: 3, sat: 15, salt: 2.2 },
+
+  // ---- Lyon & Rhône ----
+  { id: "quenelle", cat: "caris", region: "lyon", emoji: "🐟", name: "Quenelle sauce Nantua", portion: "1 portion (250 g)",
+    kcal: 420, prot: 18, carb: 26, fat: 27, fibre: 1.5, sugar: 4, sat: 12, salt: 1.6 },
+  { id: "saucisson_brioche", cat: "caris", region: "lyon", emoji: "🥖", name: "Saucisson brioché", portion: "1 part (120 g)",
+    kcal: 380, prot: 14, carb: 28, fat: 24, fibre: 1.2, sugar: 3, sat: 9, salt: 1.6 },
+  { id: "salade_lyonnaise", cat: "accomp", region: "lyon", emoji: "🥗", name: "Salade lyonnaise", portion: "1 portion (250 g)",
+    kcal: 350, prot: 16, carb: 8, fat: 28, fibre: 2, sugar: 3, sat: 8, salt: 1.4 },
+  { id: "tablier_sapeur", cat: "caris", region: "lyon", emoji: "🍽️", name: "Tablier de sapeur", portion: "1 portion (200 g)",
+    kcal: 450, prot: 22, carb: 22, fat: 30, fibre: 1.5, sugar: 2, sat: 8, salt: 1.5 },
+  { id: "tarte_pralines", cat: "desserts", region: "lyon", emoji: "🩷", name: "Tarte aux pralines", portion: "1 part (100 g)",
+    kcal: 420, prot: 5, carb: 55, fat: 20, fibre: 1.5, sugar: 40, sat: 10, salt: 0.3 },
+
+  // ---- Auvergne & Centre ----
+  { id: "aligot", cat: "accomp", region: "auvergne", emoji: "🥔", name: "Aligot", portion: "1 portion (250 g)",
+    kcal: 420, prot: 14, carb: 36, fat: 25, fibre: 3, sugar: 4, sat: 16, salt: 1.4 },
+  { id: "truffade", cat: "caris", region: "auvergne", emoji: "🥔", name: "Truffade", portion: "1 portion (250 g)",
+    kcal: 450, prot: 14, carb: 32, fat: 30, fibre: 3, sugar: 4, sat: 17, salt: 1.3 },
+  { id: "potee_auvergnate", cat: "caris", region: "auvergne", emoji: "🥘", name: "Potée auvergnate", portion: "1 portion (350 g)",
+    kcal: 420, prot: 28, carb: 25, fat: 23, fibre: 5, sugar: 5, sat: 9, salt: 2.0 },
+  { id: "lentilles_puy", cat: "grains", region: "auvergne", emoji: "🫘", name: "Lentilles du Puy aux saucisses", portion: "1 portion (250 g)",
+    kcal: 340, prot: 20, carb: 32, fat: 14, fibre: 8, sugar: 3, sat: 5, salt: 1.4 },
+  { id: "pounti", cat: "caris", region: "auvergne", emoji: "🥧", name: "Pounti auvergnat", portion: "1 part (120 g)",
+    kcal: 280, prot: 12, carb: 20, fat: 17, fibre: 2, sugar: 4, sat: 6, salt: 0.9 },
+
+  // ---- Sud-Ouest & Gascogne ----
+  { id: "cassoulet", cat: "caris", region: "sudouest", emoji: "🫘", name: "Cassoulet", portion: "1 portion (400 g)",
+    kcal: 600, prot: 35, carb: 45, fat: 30, fibre: 10, sugar: 4, sat: 10, salt: 2.2 },
+  { id: "confit_canard", cat: "caris", region: "sudouest", emoji: "🦆", name: "Confit de canard", portion: "1 cuisse (180 g)",
+    kcal: 450, prot: 30, carb: 0, fat: 37, fibre: 0, sugar: 0, sat: 12, salt: 1.5 },
+  { id: "magret", cat: "caris", region: "sudouest", emoji: "🦆", name: "Magret de canard", portion: "1 portion (150 g)",
+    kcal: 360, prot: 30, carb: 0, fat: 27, fibre: 0, sugar: 0, sat: 9, salt: 0.8 },
+  { id: "garbure", cat: "accomp", region: "sudouest", emoji: "🥣", name: "Garbure", portion: "1 bol (300 g)",
+    kcal: 250, prot: 14, carb: 24, fat: 11, fibre: 6, sugar: 5, sat: 4, salt: 1.4 },
+  { id: "foie_gras", cat: "caris", region: "sudouest", emoji: "🦢", name: "Foie gras (sur pain)", portion: "1 portion (70 g)",
+    kcal: 320, prot: 7, carb: 12, fat: 28, fibre: 0.8, sugar: 3, sat: 11, salt: 1.0 },
+
+  // ---- Pays Basque ----
+  { id: "poulet_basquaise", cat: "caris", region: "basque", emoji: "🌶️", name: "Poulet basquaise", portion: "1 portion (300 g)",
+    kcal: 380, prot: 32, carb: 14, fat: 21, fibre: 3, sugar: 7, sat: 5, salt: 1.4 },
+  { id: "piperade", cat: "caris", region: "basque", emoji: "🍳", name: "Piperade", portion: "1 portion (250 g)",
+    kcal: 240, prot: 12, carb: 12, fat: 16, fibre: 3, sugar: 7, sat: 4, salt: 1.1 },
+  { id: "axoa", cat: "caris", region: "basque", emoji: "🌶️", name: "Axoa de veau", portion: "1 portion (250 g)",
+    kcal: 320, prot: 30, carb: 8, fat: 18, fibre: 2, sugar: 4, sat: 6, salt: 1.3 },
+  { id: "gateau_basque", cat: "desserts", region: "basque", emoji: "🍰", name: "Gâteau basque", portion: "1 part (90 g)",
+    kcal: 350, prot: 6, carb: 42, fat: 17, fibre: 1.5, sugar: 22, sat: 9, salt: 0.3 },
+  { id: "jambon_bayonne", cat: "divers", region: "basque", emoji: "🍖", name: "Jambon de Bayonne", portion: "2 tranches (50 g)",
+    kcal: 130, prot: 14, carb: 0.5, fat: 8, fibre: 0, sugar: 0.5, sat: 3, salt: 2.5 },
+
+  // ---- Provence & Méditerranée ----
+  { id: "ratatouille", cat: "accomp", region: "provence", emoji: "🍆", name: "Ratatouille", portion: "1 portion (250 g)",
+    kcal: 150, prot: 3, carb: 14, fat: 9, fibre: 5, sugar: 8, sat: 1.3, salt: 0.8 },
+  { id: "bouillabaisse", cat: "caris", region: "provence", emoji: "🐟", name: "Bouillabaisse", portion: "1 portion (350 g)",
+    kcal: 350, prot: 35, carb: 12, fat: 17, fibre: 1.5, sugar: 3, sat: 3, salt: 2.0 },
+  { id: "salade_nicoise", cat: "accomp", region: "provence", emoji: "🥗", name: "Salade niçoise", portion: "1 (300 g)",
+    kcal: 300, prot: 18, carb: 14, fat: 19, fibre: 3, sugar: 5, sat: 4, salt: 1.4 },
+  { id: "pissaladiere", cat: "caris", region: "provence", emoji: "🧅", name: "Pissaladière", portion: "1 part (150 g)",
+    kcal: 320, prot: 7, carb: 35, fat: 17, fibre: 2.5, sugar: 5, sat: 3, salt: 1.6 },
+  { id: "daube", cat: "caris", region: "provence", emoji: "🍷", name: "Daube provençale", portion: "1 portion (300 g)",
+    kcal: 380, prot: 33, carb: 12, fat: 22, fibre: 2, sugar: 4, sat: 8, salt: 1.5 },
+
+  // ---- Île-de-France & classiques ----
+  { id: "steak_tartare", cat: "caris", region: "idf", emoji: "🥩", name: "Steak tartare", portion: "1 portion (200 g)",
+    kcal: 400, prot: 38, carb: 4, fat: 26, fibre: 0.5, sugar: 2, sat: 10, salt: 1.3 },
+  { id: "soupe_oignon", cat: "accomp", region: "idf", emoji: "🧅", name: "Soupe à l'oignon gratinée", portion: "1 bol (300 g)",
+    kcal: 300, prot: 12, carb: 30, fat: 14, fibre: 3, sugar: 8, sat: 7, salt: 1.8 },
+  { id: "blanquette", cat: "caris", region: "idf", emoji: "🍲", name: "Blanquette de veau", portion: "1 portion (300 g)",
+    kcal: 380, prot: 30, carb: 16, fat: 21, fibre: 1.5, sugar: 3, sat: 9, salt: 1.4 },
+  { id: "pot_au_feu", cat: "caris", region: "idf", emoji: "🥘", name: "Pot-au-feu", portion: "1 portion (350 g)",
+    kcal: 350, prot: 30, carb: 20, fat: 17, fibre: 4, sugar: 6, sat: 6, salt: 1.6 },
+  { id: "paris_brest", cat: "desserts", region: "idf", emoji: "🍩", name: "Paris-Brest", portion: "1 part (100 g)",
+    kcal: 400, prot: 8, carb: 35, fat: 26, fibre: 1.5, sugar: 22, sat: 10, salt: 0.3 },
 ];
 
 const NUTRIENT_LABELS = {
@@ -235,3 +440,26 @@ const NUTRIENT_LABELS = {
   vitc:  { label: "Vitamine C",   unit: "mg" },
 };
 const NUTRIENT_KEYS = Object.keys(NUTRIENT_LABELS);
+
+/* ================= Régions : normalisation ================= */
+/* Plats spécifiques à La Réunion (le reste de la base historique est universel,
+   donc disponible quelle que soit la région choisie). */
+const REUNION_FOOD_IDS = new Set([
+  "riz_chauffe", "riz_jaune", "manioc", "songe", "zambrocal",
+  "cari_poulet", "rougail_saucisses", "rougail_morue", "cari_poisson", "cari_camarons",
+  "civet_zourite", "cabri_massale", "cari_tijacques", "porc_boucane", "sarcives", "cari_oeufs",
+  "bredes", "chouchou_brede", "rougail_tomate", "rougail_mangue", "rougail_dakatine",
+  "achards", "salade_palmiste", "gratin_chouchou",
+  "samoussa", "samoussa_fromage", "samoussa_poulet", "samoussa_viande", "samoussa_thon",
+  "bouchon", "bouchon_poulet", "bouchon_crevette", "bonbon_piment", "pain_bouchon", "americain",
+  "gateau_patate", "gateau_manioc", "bonbon_miel", "macatia",
+  "biere_dodo", "rhum_arrange",
+]);
+
+/* Chaque aliment reçoit une région ("all" = universel/national, sinon un id de
+   région = spécialité) et tous les nutriments absents sont mis à 0 (plats
+   composés sans détail micronutriments) — évite tout NaN dans les calculs. */
+FOODS.forEach(f => {
+  if (!f.region) f.region = REUNION_FOOD_IDS.has(f.id) ? "reunion" : "all";
+  NUTRIENT_KEYS.forEach(k => { if (typeof f[k] !== "number") f[k] = 0; });
+});

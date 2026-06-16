@@ -1,10 +1,11 @@
-# 🌋 Kalori Péi — Suivi calories · La Réunion
+# 🌋 Kalori Péi — Suivi calories par région
 
 Application **gratuite**, **hors-ligne** et **sans compte** de suivi calorique,
-spécialisée dans la cuisine de **La Réunion** (caris, rougails, grains, brèdes,
-samoussas, bouchons…). Pensée pour fournir rapidement un **bilan détaillé à votre
-diététicien(ne)**, et optimisée pour les **Galaxy Z Fold 4 → 7** (écran externe
-étroit et écran interne déplié).
+couvrant la cuisine de **France métropolitaine et de La Réunion**, **par région
+culinaire** : on choisit sa région et ses spécialités apparaissent, en plus des
+plats nationaux et des aliments simples. Pensée pour fournir rapidement un
+**bilan détaillé à votre diététicien(ne)**, et optimisée pour les
+**Galaxy Z Fold 4 → 7** (écran externe étroit et écran interne déplié).
 
 ## ✨ Fonctionnalités
 
@@ -64,14 +65,19 @@ python3 -m http.server 8000
 
 ## 🍛 Base alimentaire
 
-≈ 85 aliments et plats avec valeurs **par portion standard**, estimées à partir
-de la table **CIQUAL (ANSES)** et de recettes traditionnelles :
-riz/zambrocal, grains (lentilles de Cilaos, haricots rouges, pois du Cap),
-caris (poulet, poisson, camarons, ti-jacques…), rougail saucisses/morue,
-civet zourite, cabri massalé, boucané, sarcives, brèdes, achards, rougails
-d'accompagnement (tomate, mangue, dakatine), gratin chouchou, fruits péi
-(letchis, mangue, ananas Victoria, goyaviers…), gâteau patate, macatia,
-boissons (jus, Dodo, rhum arrangé…).
+≈ 160 aliments et plats avec valeurs **par portion standard**, estimées à partir
+de la table **CIQUAL (ANSES)** et de recettes traditionnelles.
+
+- **Sélection par région** (📍 dans la saisie et dans les réglages) : la région
+  active fait apparaître ses **spécialités**, en plus des **plats nationaux**
+  (visibles partout) et des **aliments simples**. La **recherche**, elle, trouve
+  tous les plats de la base, quelle que soit la région.
+- **Régions culinaires** : La Réunion (caris, rougails, samoussas, bouchons,
+  gâteau patate, macatia…), Île-de-France & classiques, Bretagne, Normandie,
+  Nord & Ch'ti, Alsace-Lorraine, Bourgogne & Est, Savoie & Alpes, Lyon & Rhône,
+  Auvergne & Centre, Sud-Ouest & Gascogne, Pays Basque, Provence & Méditerranée.
+- **Plats nationaux** : steak-frites, croque-monsieur, quiche, hachis parmentier,
+  pâtes bolognaise, pizza, burger, poulet rôti, omelette, kebab, viennoiseries…
 
 - **Snacks détaillés par garniture** : les samoussas (légumes, fromage, poulet,
   viande, thon) et bouchons (porc, poulet, crevette) sont distingués — une part
