@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1b5e20">
-  <meta name="description" content="Suivi calorique rapide spécialisé cuisine de La Réunion — bilan macro/micronutriments pour votre diététicien(ne).">
-  <title>Kalori Péi — Suivi calories La Réunion</title>
+  <meta name="description" content="Suivi calorique rapide — cuisine de France métropolitaine et de La Réunion, par région. Bilan macro/micronutriments pour votre diététicien(ne).">
+  <title>Kalori Péi — Suivi calories par région</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -16,7 +16,7 @@
 <header class="app-header">
   <span class="logo">🌋</span>
   <h1>Kalori Péi</h1>
-  <span class="subtitle">Suivi calories · La Réunion</span>
+  <span class="subtitle">Suivi calories · France & Réunion</span>
 </header>
 
 <main>
@@ -30,7 +30,9 @@
             puis validez : votre journée se remplit toute seule.</span>
           <button id="first-hint-close" class="hint-close" aria-label="Fermer ce message d'aide">✕</button>
         </div>
-        <input id="food-search" type="search" placeholder="🔍 Rechercher un plat… (cari, rougail…)" autocomplete="off" aria-label="Rechercher un plat">
+        <div class="region-bar"><label>📍 Région
+          <select id="region-select" aria-label="Choisir ma région"></select></label></div>
+        <input id="food-search" type="search" placeholder="🔍 Rechercher un plat… (cari, cassoulet, galette…)" autocomplete="off" aria-label="Rechercher un plat">
         <div id="cat-bar" class="cat-bar"></div>
         <div id="tile-grid" class="tile-grid"></div>
         <p class="hint">Appui court : +1 dose · Appui long : fiche aliment & photo</p>
@@ -94,6 +96,14 @@
   <!-- ============ VUE RÉGLAGES ============ -->
   <section id="view-reglages" class="view" hidden>
     <div class="card">
+      <h2>📍 Ma région</h2>
+      <label class="region-line">Région culinaire
+        <select id="region-select-2" aria-label="Choisir ma région"></select></label>
+      <p><small>Votre région fait apparaître ses spécialités dans la saisie, en plus
+        des plats nationaux et des aliments simples. La recherche, elle, trouve
+        tous les plats de la base, quelle que soit la région.</small></p>
+    </div>
+    <div class="card">
       <h2>🎯 Apports journaliers cibles</h2>
       <label class="radio-line"><input type="radio" name="mode" id="mode-manual">
         Saisie manuelle <small>(valeurs données par votre diététicien(ne) — recommandé)</small></label>
@@ -156,10 +166,10 @@
     <div class="card">
       <h2>ℹ️ À propos</h2>
       <p><small>Kalori Péi — application gratuite et hors-ligne de suivi calorique,
-      spécialisée cuisine réunionnaise. Valeurs nutritionnelles estimées à partir de la
-      table CIQUAL (ANSES) et de recettes traditionnelles : elles restent indicatives,
-      votre diététicien(ne) reste la référence. Optimisée Galaxy Z Fold (écran externe
-      et interne).</small></p>
+      cuisine de France métropolitaine et de La Réunion (sélection par région).
+      Valeurs nutritionnelles estimées à partir de la table CIQUAL (ANSES) et de
+      recettes traditionnelles : elles restent indicatives, votre diététicien(ne)
+      reste la référence. Optimisée Galaxy Z Fold (écran externe et interne).</small></p>
     </div>
   </section>
 </main>
