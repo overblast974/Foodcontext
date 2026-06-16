@@ -271,7 +271,7 @@ const FOODS = [
   { id: "soupe_legumes", cat: "accomp", region: "all", emoji: "🍵", name: "Soupe de légumes", portion: "1 bol (250 g)",
     kcal: 90, prot: 3, carb: 14, fat: 2.5, fibre: 3.5, sugar: 6, sat: 0.5, salt: 0.9 },
   { id: "kebab", cat: "snacks", region: "all", emoji: "🥙", name: "Kebab / galette", portion: "1 (350 g)",
-    kcal: 700, prot: 30, carb: 70, fat: 33, fibre: 4, sugar: 6, sat: 9, salt: 2.8 },
+    kcal: 800, prot: 33, carb: 80, fat: 38, fibre: 4, sugar: 6, sat: 10, salt: 3.0 },
   { id: "croissant", cat: "desserts", region: "all", emoji: "🥐", name: "Croissant", portion: "1 (60 g)",
     kcal: 250, prot: 5, carb: 26, fat: 14, fibre: 1, sugar: 6, sat: 8, salt: 0.5 },
   { id: "pain_chocolat", cat: "desserts", region: "all", emoji: "🍫", name: "Pain au chocolat", portion: "1 (70 g)",
@@ -385,7 +385,7 @@ const FOODS = [
   { id: "garbure", cat: "accomp", region: "sudouest", emoji: "🥣", name: "Garbure", portion: "1 bol (300 g)",
     kcal: 250, prot: 14, carb: 24, fat: 11, fibre: 6, sugar: 5, sat: 4, salt: 1.4 },
   { id: "foie_gras", cat: "caris", region: "sudouest", emoji: "🦢", name: "Foie gras (sur pain)", portion: "1 portion (70 g)",
-    kcal: 320, prot: 7, carb: 12, fat: 28, fibre: 0.8, sugar: 3, sat: 11, salt: 1.0 },
+    kcal: 320, prot: 5, carb: 12, fat: 28, fibre: 0.8, sugar: 3, sat: 11, salt: 1.0 },
 
   // ---- Pays Basque ----
   { id: "poulet_basquaise", cat: "caris", region: "basque", emoji: "🌶️", name: "Poulet basquaise", portion: "1 portion (300 g)",
